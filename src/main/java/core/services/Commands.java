@@ -6,11 +6,14 @@ import reactor.core.publisher.Mono;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
-public class Commands {
-    static final HashMap<String, Command> commands=new HashMap<>();
-    public static void   setup(){
+public class Commands implements Service {
+    public static final HashMap<String, Command> commands=new HashMap<>();
+    @Override
+    public void  setup(Properties properties){
         //Add all commands down here
        commands.put("hello", event->event.getMessage()
                .getChannel().flatMap(chanel->
@@ -30,8 +33,15 @@ public class Commands {
        commands.put("join",event -> Mono.justOrEmpty(event.getMember())
        .flatMap(Member::getVoiceState)
                .flatMap(VoiceState::getChannel)
-                    .flatMap(voiceChannel -> voiceChannel.join(spec->spec.setProvider(null)))
+                    .flatMap(voiceChannel -> voiceChannel.join(spec->spec.setProvider(properties.getAudioProvider())))
        .then());
        // Command for bot to leave the Voice Channel
+
+        // Command for playing music
+        commands.put("play", event -> Mono.justOrEmpty(event.getMessage().getContent())
+                .map(content -> Arrays.asList(content.split(" ")))
+                .doOnNext(command -> properties.getPlayerManager().loadItem(command.get(1), properties.scheduler))
+                .then());
     }
+
 }

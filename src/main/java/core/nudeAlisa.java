@@ -1,6 +1,7 @@
 package core;
 
 import core.services.Commands;
+import core.services.Properties;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -11,7 +12,7 @@ public class nudeAlisa {
     private static char prefix='+';
     public static void main(String[] args) {
         if (args.length==0) System.err.print("No argc passed(no token)");
-        Commands.setup();
+        Properties properties=new Properties();
         final GatewayDiscordClient client = DiscordClientBuilder.create(args[0]).build()
                 .login()
                 .block();
