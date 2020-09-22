@@ -1,4 +1,4 @@
-package core;
+package core.services;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;

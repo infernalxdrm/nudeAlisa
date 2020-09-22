@@ -1,4 +1,4 @@
-package core;
+package core.services;
 
 public class Properties {
 }
