@@ -1,6 +1,9 @@
 package core;
 
+import discord4j.core.object.VoiceState;
+import discord4j.core.object.entity.Member;
 import discord4j.core.spec.MessageCreateSpec;
+import reactor.core.publisher.Mono;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,7 +27,11 @@ public class Commands {
                        e.printStackTrace();
                    }
                })
-
                .then()));
+       commands.put("join",event -> Mono.justOrEmpty(event.getMember())
+       .flatMap(Member::getVoiceState)
+               .flatMap(VoiceState::getChannel)
+                    .flatMap(voiceChannel -> voiceChannel.join(spec->spec.setProvider(provider)))
+       .then());
     }
 }
