@@ -22,6 +22,7 @@ public class Properties  {
         AudioSourceManagers.registerRemoteSources(playerManager);
         //add all services down here
         services.add(new Commands());
+
         //...
         //init setup for services you added
         services.forEach(service -> service.setup(this));

@@ -1,7 +1,9 @@
 package core.services;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.reaction.Reaction;
 import reactor.core.publisher.Mono;
 
 import java.io.FileInputStream;
@@ -41,6 +43,23 @@ public class Commands implements Service {
         commands.put("play", event -> Mono.justOrEmpty(event.getMessage().getContent())
                 .map(content -> Arrays.asList(content.split(" ")))
                 .doOnNext(command -> properties.getPlayerManager().loadItem(command.get(1), properties.scheduler))
+
+                .then());
+        // Command for showing playlist
+        commands.put("q",event -> event.getMessage().getChannel()
+        .flatMap(channel->channel.createMessage(properties.scheduler.getPlayList()))
+        .then());
+        commands.put("loop",event -> event.getMessage().getChannel()
+        .flatMap(channel->{
+            if (properties.scheduler.loop())return channel.createMessage("Now Looped"+"👍");
+            return channel.createMessage("Now no more loop 😢");
+        })
+        .then());
+        commands.put("qloop",event -> event.getMessage().getChannel()
+                .flatMap(channel->{
+                    if (properties.scheduler.q_loop())return channel.createMessage("Now queue Looped"+"👍");
+                    return channel.createMessage("Now no more loop 😢");
+                })
                 .then());
     }
 
