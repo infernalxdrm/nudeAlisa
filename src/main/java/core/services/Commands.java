@@ -49,18 +49,28 @@ public class Commands implements Service {
         commands.put("q",event -> event.getMessage().getChannel()
         .flatMap(channel->channel.createMessage(properties.scheduler.getPlayList()))
         .then());
+        // Command for looping the track
         commands.put("loop",event -> event.getMessage().getChannel()
         .flatMap(channel->{
             if (properties.scheduler.loop())return channel.createMessage("Now Looped"+"👍");
             return channel.createMessage("Now no more loop 😢");
         })
         .then());
+        // Command for looping the queue
         commands.put("qloop",event -> event.getMessage().getChannel()
                 .flatMap(channel->{
                     if (properties.scheduler.q_loop())return channel.createMessage("Now queue Looped"+"👍");
                     return channel.createMessage("Now no more loop 😢");
                 })
                 .then());
+        // Command for skipping current track
+        commands.put("skip",event -> event.getMessage().getChannel()
+                .flatMap(channel->{ properties.scheduler.skip();
+                   return channel.createMessage("Skipped 🤞");
+                })
+                .then());
+
     }
+
 
 }

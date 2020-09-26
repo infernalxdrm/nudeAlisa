@@ -17,6 +17,7 @@ public final class TrackScheduler implements AudioLoadResultHandler {
     LinkedList<AudioTrack> loopList=new LinkedList<>();
     private boolean isLooped=false;
     private AudioTrack current_track;
+    private boolean anotherThreadPossessing=false;
 
 
     public TrackScheduler(final AudioPlayer player) {
@@ -26,29 +27,32 @@ public final class TrackScheduler implements AudioLoadResultHandler {
             int numberInLoopQ=0;
             while (true) {
                 try {
-                    if (playlist.isEmpty()){
+                    if (playlist.isEmpty() || anotherThreadPossessing){
                         Thread.sleep(200);
                         continue;
                     }
-
-
+                    synchronized (TrackScheduler.class) {
+                        TrackScheduler.class.wait();
                         Thread.sleep(200);
-                    //if looped and no loop queue play single track
-                    if (player.getPlayingTrack() == null) {
-                        if (isLooped && loopList.size()==0 && current_track!=null){
-                            player.playTrack(current_track.makeClone());
+                        //if looped and no loop queue play single track
+                        if (player.getPlayingTrack() == null) {
+                            if (isLooped && loopList.size() == 0 && current_track != null) {
+                                player.playTrack(current_track.makeClone());
+                            }
+                            // if looped and loop queue isnt empty loop the queue list
+                            else if (isLooped) {
+                                AudioTrack track = loopList.get(numberInLoopQ++).makeClone();
+                                current_track = track;
+                                player.playTrack(track);
+                                if (numberInLoopQ >= loopList.size()) numberInLoopQ = 0;
+                            }
+                            //else just a normal behavior first in queue
+                            else {
+                                current_track = playlist.poll();
+                                player.playTrack(current_track);
+                            }
                         }
-                        // if looped and loop queue isnt empty loop the queue list
-                        else if (isLooped){
-                            AudioTrack track=loopList.get(numberInLoopQ++).makeClone();
-                            current_track=track;
-                            player.playTrack(track);
-                            if (numberInLoopQ>=loopList.size())numberInLoopQ=0;
-                        }
-                        //else just a normal behavior first in queue
-                        else {
-                        current_track=playlist.poll();
-                        player.playTrack(current_track);}
+                        TrackScheduler.class.notify();
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -83,6 +87,7 @@ public final class TrackScheduler implements AudioLoadResultHandler {
     }
 
     public String getPlayList() {
+        if(current_track==null)return "No music yet 🤷‍♀️";
         StringBuilder builder = new StringBuilder();
         builder.append("1) Currently playing: ")
                 .append(current_track.getInfo().title)
@@ -123,6 +128,20 @@ public final class TrackScheduler implements AudioLoadResultHandler {
         }
         loopList.addAll(playlist);
         isLooped=true;
+        return true;
+    }
+    public  void skip(){
+        if (current_track==null)return;
+        if (playlist.size()==0){
+            stop();
+            return;
+        }
+        anotherThreadPossessing=true;
+        current_track=playlist.poll();
+        player.playTrack(current_track);
+        anotherThreadPossessing=false;
+    }
+    public boolean clear(int number){
         return true;
     }
 }
