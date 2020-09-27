@@ -1,4 +1,4 @@
-package core.services;
+package core.services.audio;
 
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
