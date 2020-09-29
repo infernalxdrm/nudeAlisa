@@ -20,6 +20,12 @@ public class AI implements answerable {
     @Override
     public String respond(String message) {
         try {
+            String reply=parser.sendAI(message);
+                int reboot=0;
+                while (reply.equals("") || reboot++ < 15){
+                    restart();
+                    reply=parser.sendAI(message);
+                }
             return parser.sendAI(message);
         } catch (IOException e) {
             e.printStackTrace();
