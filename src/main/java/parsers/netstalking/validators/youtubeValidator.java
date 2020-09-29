@@ -1,7 +1,6 @@
 package parsers.netstalking.validators;
 
-import network.utils;
-
+import utils.httpUtil;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -15,7 +14,7 @@ public class youtubeValidator implements validator {
     @Override
     public String validate(String link) throws RuntimeException {
         AtomicBoolean isInvalid= new AtomicBoolean(false);
-        utils.getHtmlStream(link).forEach(s -> {
+        httpUtil.getHtmlStream(link).forEach(s -> {
             if (s.contains(nonvalid_link)) isInvalid.set(true);
         });
         if (!isInvalid.get())return link;

@@ -1,13 +1,13 @@
 package parsers.netstalking.validators;
 
-import network.utils;
+import utils.httpUtil;
 
 import java.util.List;
 
 public class imgurValidator implements validator {
 
     public String validate(String link) {
-        String redirect=utils.getRedirect(link);
+        String redirect= httpUtil.getRedirect(link);
         if (redirect==null)return link;
         throw new RuntimeException("invalid link");
     }

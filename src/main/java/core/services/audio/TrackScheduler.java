@@ -46,7 +46,7 @@ public final class TrackScheduler extends AudioEventAdapter {
         if (!playing) {
             playlist.add(track);
         }
-
+        current_track=track;
         return playing;
     }
 
@@ -57,17 +57,19 @@ public final class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackEnd(final AudioPlayer player, final AudioTrack track, final AudioTrackEndReason endReason) {
         //if lopped only one track
-        if (isLooped && loopList.isEmpty()){
+        if (isLooped && loopList.isEmpty() && endReason.mayStartNext){
             player.playTrack(track.makeClone());
         }
         // if lopped the whole queue
-        else if (isLooped){
+        else if (isLooped && endReason.mayStartNext){
             player.playTrack(loopList.get(inLoopPos++).makeClone());
+            current_track=player.getPlayingTrack();
             if (inLoopPos>=loopList.size())inLoopPos=0;
         }
         // Advance the player if the track completed naturally (FINISHED) or if the track cannot play (LOAD_FAILED)
        else if (endReason.mayStartNext) {
             skip();
+            current_track=player.getPlayingTrack();
         }
     }
     public String getPlayList() {
