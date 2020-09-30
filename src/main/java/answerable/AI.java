@@ -22,11 +22,15 @@ public class AI implements answerable {
         try {
             String reply=parser.sendAI(message);
                 int reboot=0;
-                while (reply.equals("") || reboot++ < 15){
+                /*while (reply.equals("") || reboot++ < 15){
                     restart();
                     reply=parser.sendAI(message);
-                }
-            return parser.sendAI(message);
+                }*/
+               if (reply.equals("")){
+                   reply="(⊙_⊙)？";
+                   restart();
+               }
+               return reply;
         } catch (IOException e) {
             e.printStackTrace();
             return "Ошибочка вышла" + Arrays.toString(e.getStackTrace());
@@ -43,6 +47,7 @@ public class AI implements answerable {
         try {
             parser.init();
         } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
     }
 
