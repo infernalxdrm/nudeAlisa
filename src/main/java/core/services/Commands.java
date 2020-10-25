@@ -8,16 +8,19 @@ import com.sun.xml.internal.bind.v2.TODO;
 import com.sun.xml.internal.fastinfoset.tools.FI_StAX_SAX_Or_XML_SAX_SAXEvent;
 import core.nudeAlisa;
 import core.services.audio.GuildAudioManager;
+import core.services.video.TV;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.reaction.Reaction;
+import discord4j.rest.util.Color;
 import reactor.core.publisher.Mono;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -121,6 +124,8 @@ public class Commands implements Service {
                 channel.createMessage(properties.aiMessage.getInstance().respond(event.getMessage().getContent().substring(Properties.id.length()-1)))
             )
        .then());
+       commands.put("tv",event ->properties.tv.test(event.getMessage()));
+       commands.put("photo",event -> properties.tv.photo(event.getMessage(),event.getMessage().getContent().substring(7)));
 
     }
 

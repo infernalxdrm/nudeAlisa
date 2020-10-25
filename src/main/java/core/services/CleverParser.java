@@ -23,9 +23,9 @@ public class CleverParser {
 
     public void init() throws IOException {
         /* Suppress HtmlUnit logs */
-        LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
-        java.util.logging.Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
+        //LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+        //java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
+        //java.util.logging.Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
 
         WebClient client = new WebClient(BrowserVersion.BEST_SUPPORTED);
         client.getOptions().setCssEnabled(false);
@@ -44,7 +44,6 @@ public class CleverParser {
         final HtmlForm form = this.page.get().getForms().get(page.get().getForms().size() - 1);
         final HtmlTextInput textField = form.getInputByName("stimulus");
         textField.type(text);
-
         this.page.get().executeJavaScript("cleverbot.sendAI()"); //Send date from form
 
         //noinspection StatementWithEmptyBody

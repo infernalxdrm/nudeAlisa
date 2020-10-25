@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
 import core.services.audio.LavaAudioProvider;
 import core.services.audio.TrackScheduler;
+import core.services.video.TV;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.voice.AudioProvider;
 
@@ -22,7 +23,8 @@ public class Properties  {
     AudioProvider provider = new LavaAudioProvider(player);
     final TrackScheduler scheduler = new TrackScheduler(player);
     final static String id="<@!757526337408991304>";// TODO: 9/29/2020 its better to check by id not by string
-    final  AI aiMessage=new AI();
+    final  AI aiMessage=  null;//new AI();
+    final TV tv=new TV();
 
     public Properties(GatewayDiscordClient client){
         this.client=client;
