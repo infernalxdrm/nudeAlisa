@@ -4,6 +4,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.MessageCreateSpec;
+import lombok.SneakyThrows;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -22,72 +23,50 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
-public class Parser implements Subscriber<String>,Consumer<String> {
+public class Parser  {
     final static generator imgurGenerator=new imgurGenerator();
     final static generator lightshotGenerator=new screenshootsGenerator();
     final static validator imgurValidator=new imgurValidator();
     final static validator lightshotValidator=new imgurValidator();
-    private MessageCreateEvent e;
-    Parser(MessageCreateEvent e){
-        this.e =e;
-    }
-    public  List<String> imgurGenerate(String number){
-        int numberInt=Integer.parseInt(number);
-        return   getList(numberInt,imgurGenerator,imgurValidator);
+
+    Mono<Void> get(MessageCreateEvent  e,String command){
+        final MessageChannel channel = e.getMessage().getChannel().block();
+        String [] params=command.split(" ");
+        switch (params[0]){
+            case "imgur" :
+                try {
+
+                    int request_number= Integer.parseInt(params[1]);
+                    if (request_number>100)return channel.createMessage("Number must be less than 100").then();
+                    for (int i = 0; i < request_number; i++) {
+                        try {
+                        channel.createMessage(imgurValidator.validate(imgurGenerator.generate()));}
+                        catch (RuntimeException se){i--;}
+                    }
+                }
+                catch (NumberFormatException ex){
+                    return channel.createMessage("Number must be an integer").then();
+                }
+                break;
+
+            case "lightroom" :
+                try {
+                    int request_number= Integer.parseInt(params[1]);
+                    if (request_number>100)return channel.createMessage("Number must be less than 100").then();
+                    for (int i = 0; i < request_number; i++) {
+                        try {
+                            channel.createMessage(lightshotValidator.validate(lightshotGenerator.generate()));}
+                        catch (RuntimeException se){i--;}
+                    }
+                }
+                catch (NumberFormatException ex){
+                    return channel.createMessage("Number must be an integer").then();
+                }
+                break;
+
+         }
+         return channel.createMessage("❤").then();
 
     }
 
-    private  List<String> getList(int a,generator g,validator v) {
-        List<String> strings=new LinkedList<>();
-        if (a>100){
-            strings.add("number is to big");
-            return strings;
-        }
-        if (a<0){
-            strings.add("number must be positive");
-            return strings;
-        }
-        for (int i = 0; i < a; i++) {
-            try {
-               onNext(v.validate(g.generate()));
-            }
-            catch (RuntimeException e){
-                i--;
-            }
-        }
-        this.onComplete();
-        return strings;
-    }
-
-
-    @Override
-    public void onSubscribe(Subscription subscription) {
-    }
-
-    @Override
-    public void onNext(String s) {
-        e.getMessage().getChannel()
-                .map(channel -> channel.createMessage(s)).then().subscribe();
-
-    }
-
-    @Override
-    public void onError(Throwable throwable) {
-
-    }
-
-    @Override
-    public void onComplete() {
-
-    }
-
-    @Override
-    public void accept(String s) {
-
-    }
-
-    @Override
-    public Consumer<String> andThen(Consumer<? super String> after) {
-        return null;
-    }
 }

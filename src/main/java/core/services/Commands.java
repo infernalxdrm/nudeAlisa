@@ -115,10 +115,8 @@ public class Commands implements Service {
                    return channel.createMessage("Skipped 🤞");
                 })
                 .then());
-       commands.put("imgur",event ->{
-           new Parser(event);
-           return event.getMessage().getChannel().then();
-       });
+       commands.put("imgur",event ->
+           new Parser(event).;);
        altCommands.put(Properties.id, event -> event.getMessage().getChannel()
             .flatMap(channel ->
                 channel.createMessage(properties.aiMessage.getInstance().respond(event.getMessage().getContent().substring(Properties.id.length()-1)))
