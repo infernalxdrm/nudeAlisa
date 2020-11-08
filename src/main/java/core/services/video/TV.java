@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 
 public class TV {
     private static final float size_persent=0.1f;
@@ -20,6 +21,27 @@ public class TV {
     public static final String red="🟥";
     public static final String blue="🟦";
     public static final String green="🟩";
+    static HashMap<Integer,String> colors=new HashMap<>();
+    static {
+        colors.put(Integer.parseInt("E81224",16),"🟥"); //red
+        colors.put(Integer.parseInt("F7630C",16),"🟧"); //orange
+        colors.put(Integer.parseInt("FFF100",16),"🟨"); //yellow
+        colors.put(Integer.parseInt("16C60C",16),"🟩"); //green
+        colors.put(Integer.parseInt("0078D7",16),"🟦"); //blue
+        colors.put(Integer.parseInt("886CE4",16),"🟪"); //purple
+        colors.put(Integer.parseInt("8E562E",16),"🟫"); //brown
+        colors.put(Integer.parseInt("383838",16),"⬛"); //black
+        colors.put(Integer.parseInt("F2F2F2",16),"⬜"); //white
+        colors.put(Integer.parseInt("F7D7C4",16),"🏻"); //Light Skin Tone
+        colors.put(Integer.parseInt("D8B094",16),"🏼"); //Medium-Light Skin Tone
+        colors.put(Integer.parseInt("BB9167",16),"🏽"); //Medium Skin Tone
+        colors.put(Integer.parseInt("8E562E",16),"🏾"); //Medium-Dark Skin Tone
+        colors.put(Integer.parseInt("613D30",16),"🏿"); //Dark Skin Tone
+    }
+
+
+
+
     public static final int fullHD_x=1920;
     public static final int fullHD_y=1080;
     public  float toHD=0.666f; //0,6666

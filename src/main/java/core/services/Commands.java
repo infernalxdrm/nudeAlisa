@@ -1,5 +1,6 @@
 package core.services;
 
+import AiDungeon.AiDungeon;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -124,6 +125,10 @@ public class Commands implements Service {
        .then());
        commands.put("tv",event ->properties.tv.test(event.getMessage()));
        commands.put("photo",event -> properties.tv.photo(event.getMessage(),event.getMessage().getContent().substring(7)));
+
+        // TODO: 11/8/2020 rearrange commands
+        ////// AIGUNGEON COMMANDS ////////////
+        commands.put("dungeon_start", AiDungeon::init);
 
     }
 
