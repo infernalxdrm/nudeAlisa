@@ -1,6 +1,5 @@
 package core.services.video;
 
-import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import lombok.SneakyThrows;
@@ -13,6 +12,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class TV {
     private static final float size_persent=0.1f;
@@ -127,16 +128,24 @@ public class TV {
                      int r = (av_pixel>>16)&0xFF;
                      int a = (av_pixel>>24)&0xFF;
                      /* select main color */
-                     int rgb = r + g + b;
-                     if (rgb>=615)builder.append(White);
-                     else if (rgb<153)builder.append(black);
-                     else {
-                      if (b > g && b > r) builder.append(blue);
-                     else if (g > r && g > b) builder.append(green);
-                     else  if (r > g && r > b)builder.append(red);
+                AtomicReference<String> color = new AtomicReference<>("⬜"); //white by default
+                AtomicInteger distance = new AtomicInteger(Integer.MAX_VALUE);
+                colors.forEach((key, value) -> {
+                    int b_ = (key) & 0xFF;
+                    int g_ = (key >> 8) & 0xFF;
+                    int r_ = (key >> 16) & 0xFF;
+                    int vector = (int) Math.sqrt(Math.pow((r - r_), 2) + Math.pow((g - g_), 2) + Math.pow((b - b_), 2)); //calculating the vector length in 3d distention
+
+
+                    if (vector < distance.get()) {
+                        distance.set(vector);
+                        color.set(value);
+                    }
+                });
+                builder.append(color);
                      /* //////////////////////////////  */
-                     }
-                 }
+
+            }
 
 
 

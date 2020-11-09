@@ -23,7 +23,7 @@ public class Properties  {
     AudioProvider provider = new LavaAudioProvider(player);
     final TrackScheduler scheduler = new TrackScheduler(player);
     final static String id="<@!757526337408991304>";// TODO: 9/29/2020 its better to check by id not by string
-    final  AI aiMessage=  null;//new AI();
+    final AI aiMessage = new AI();//new AI();
     final TV tv=new TV();
 
     public Properties(GatewayDiscordClient client){
