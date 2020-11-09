@@ -1,27 +1,13 @@
 package core.services;
-import discord4j.core.event.domain.channel.ChannelEvent;
+
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.spec.MessageCreateSpec;
-import lombok.SneakyThrows;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-import parsers.netstalking.*;
 import parsers.netstalking.generators.generator;
 import parsers.netstalking.generators.imgurGenerator;
 import parsers.netstalking.generators.screenshootsGenerator;
 import parsers.netstalking.validators.imgurValidator;
 import parsers.netstalking.validators.validator;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.time.Duration;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
 
 public class Parser  {
     final static generator imgurGenerator=new imgurGenerator();
@@ -65,7 +51,7 @@ public class Parser  {
                 break;
 
          }
-         return channel.createMessage("❤").then();
+        return channel.createMessage(":heart:").then();
 
     }
 

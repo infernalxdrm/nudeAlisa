@@ -1,17 +1,13 @@
 package core.services.audio;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class TrackScheduler extends AudioEventAdapter {
@@ -73,7 +69,7 @@ public final class TrackScheduler extends AudioEventAdapter {
         }
     }
     public String getPlayList() {
-        if(current_track==null)return "No music yet 🤷‍♀️";
+        if (current_track == null) return "No music yet :sweat_smile: ️";
         StringBuilder builder = new StringBuilder();
         builder.append("1) Currently playing: ")
                 .append(current_track.getInfo().title)

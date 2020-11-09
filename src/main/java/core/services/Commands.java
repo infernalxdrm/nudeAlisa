@@ -91,21 +91,23 @@ public class Commands implements Service {
         // Command for looping the track
         commands.put("loop",event -> event.getMessage().getChannel()
         .flatMap(channel->{
-            if (GuildAudioManager.of(event.getGuildId().get()).getScheduler().loop())return channel.createMessage("Now Looped"+"👍");
-            return channel.createMessage("Now no more loop 😢");
+            if (GuildAudioManager.of(event.getGuildId().get()).getScheduler().loop())
+                return channel.createMessage("Now Looped" + ":thumbsup:");
+            return channel.createMessage("Now no more loop :cry:");
         })
         .then());
         // Command for looping the queue
         commands.put("qloop",event -> event.getMessage().getChannel()
                 .flatMap(channel->{
-                    if (GuildAudioManager.of(event.getGuildId().get()).getScheduler().q_loop())return channel.createMessage("Now queue Looped"+"👍");
-                    return channel.createMessage("Now no more loop 😢");
+                    if (GuildAudioManager.of(event.getGuildId().get()).getScheduler().q_loop())
+                        return channel.createMessage("Now queue Looped" + ":thumbsup:");
+                    return channel.createMessage("Now no more playlist loop :cry:");
                 })
                 .then());
         // Command for skipping current track
         commands.put("skip",event -> event.getMessage().getChannel()
                 .flatMap(channel->{ GuildAudioManager.of(event.getGuildId().get()).getScheduler().skip();
-                   return channel.createMessage("Skipped 🤞");
+                    return channel.createMessage("Skipped :fingers_crossed:");
                 })
                 .then());
        commands.put("imgur",event -> new Parser().get(event,event.getMessage().getContent()));
