@@ -24,20 +24,20 @@ public class TV {
     public static final String green="🟩";
     static HashMap<Integer,String> colors=new HashMap<>();
     static {
-        colors.put(Integer.parseInt("E81224",16),"🟥"); //red
-        colors.put(Integer.parseInt("F7630C",16),"🟧"); //orange
-        colors.put(Integer.parseInt("FFF100",16),"🟨"); //yellow
-        colors.put(Integer.parseInt("16C60C",16),"🟩"); //green
-        colors.put(Integer.parseInt("0078D7",16),"🟦"); //blue
-        colors.put(Integer.parseInt("886CE4",16),"🟪"); //purple
-        colors.put(Integer.parseInt("8E562E",16),"🟫"); //brown
-        colors.put(Integer.parseInt("383838",16),"⬛"); //black
-        colors.put(Integer.parseInt("F2F2F2",16),"⬜"); //white
-        colors.put(Integer.parseInt("F7D7C4",16),"🏻"); //Light Skin Tone
-        colors.put(Integer.parseInt("D8B094",16),"🏼"); //Medium-Light Skin Tone
-        colors.put(Integer.parseInt("BB9167",16),"🏽"); //Medium Skin Tone
-        colors.put(Integer.parseInt("8E562E",16),"🏾"); //Medium-Dark Skin Tone
-        colors.put(Integer.parseInt("613D30",16),"🏿"); //Dark Skin Tone
+        colors.put(Integer.parseInt("E81224", 16), "\uD83D\uDFE5"); //red
+        colors.put(Integer.parseInt("F7630C", 16), "\uD83D\uDFE7"); //orange
+        colors.put(Integer.parseInt("FFF100", 16), "\uD83D\uDFE8"); //yellow
+        colors.put(Integer.parseInt("16C60C", 16), "\uD83D\uDFE9"); //green
+        colors.put(Integer.parseInt("0078D7", 16), "\uD83D\uDFE6"); //blue
+        colors.put(Integer.parseInt("886CE4", 16), "\uD83D\uDFEA"); //purple
+        colors.put(Integer.parseInt("8E562E", 16), "\uD83D\uDFEB"); //brown
+        colors.put(Integer.parseInt("383838", 16), "\uD83D\u2B1B"); //black
+        colors.put(Integer.parseInt("F2F2F2", 16), "\uD83D\u2B1C"); //white
+        colors.put(Integer.parseInt("F7D7C4", 16), "\uD83C\uDFFB"); //Light Skin Tone
+        colors.put(Integer.parseInt("D8B094", 16), "\uD83C\uDFFC"); //Medium-Light Skin Tone
+        colors.put(Integer.parseInt("BB9167", 16), "\uD83C\uDFFD"); //Medium Skin Tone
+        colors.put(Integer.parseInt("8E562E", 16), "\uD83C\uDFFE"); //Medium-Dark Skin Tone
+        colors.put(Integer.parseInt("613D30", 16), "\uD83C\uDFFF"); //Dark Skin Tone
     }
 
 

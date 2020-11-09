@@ -7,6 +7,10 @@
     <groupId>com.Kworker</groupId>
     <artifactId>nudeAlisa</artifactId>
     <version>0.1</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -22,7 +26,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>network.server</mainClass>
+                            <mainClass>core.nudeAlisa</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

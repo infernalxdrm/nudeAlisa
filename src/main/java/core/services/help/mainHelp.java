@@ -29,15 +29,15 @@ public class mainHelp {
                              "as a parameter takes the number of pictures user wants to receive (expl 'imgur 10'\n\n" +
                              "lightshot - sends random user's screenshots form the Lightshot\n" +
                              "as a parameter takes the number of pictures user wants to receive (expl 'lightshot 10'\n\n" +
-                             "photo - turns photo you sent into big discord pixelart\n" +
+                             "pixelart - turns photo you sent into big discord pixelart\n" +
                              "first parameter is link to the photo second parameter is resolution\n" +
-                             "for resolution bigger than vga ")
+                             "for resolution bigger than vga is better do run discord in the browser ")
                      .addField("Supported resolutions", "https://imgur.com/a/hqeQwv5", true)
-                     .addField("Ping", "if you ping Alisa, she will reply to you", false)
+                     .addField("Ping", "if you ping Alisa with message, she will reply to you", false)
                      .setThumbnail(photo)
                      .setFooter("Made by Kworker#0101", photo)
                      .setTimestamp(Instant.now())
         ).block();
-        return channel.createMessage(":-)").then();
+        return event.getMessage().getChannel().then();
     }
 }

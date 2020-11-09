@@ -117,7 +117,7 @@ public class Commands implements Service {
        .then());
        commands.put("tv",event ->properties.tv.test(event.getMessage()));
         commands.put("help", event -> mainHelp.getHelp(event));
-       commands.put("photo",event -> properties.tv.photo(event.getMessage(),event.getMessage().getContent().substring(7)));
+        commands.put("pixelart", event -> properties.tv.photo(event.getMessage(), event.getMessage().getContent().substring(7)));
 
         // TODO: 11/8/2020 rearrange commands
         ////// AIGUNGEON COMMANDS ////////////
