@@ -24,6 +24,9 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
+                    <finalName>Alisa</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <outputDirectory>.</outputDirectory>
                     <archive>
                         <manifest>
                             <mainClass>core.nudeAlisa</mainClass>
@@ -51,9 +54,14 @@
             <version>3.1.1</version>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.5</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

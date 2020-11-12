@@ -1,7 +1,6 @@
 package core.services.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import discord4j.common.util.Snowflake;
 import lombok.Data;
 
@@ -20,7 +19,7 @@ public final class GuildAudioManager {
     private final LavaAudioProvider provider;
 
     private GuildAudioManager() {
-        player =new  DefaultAudioPlayerManager().createPlayer();
+        player = LavaAudioProvider.getPlayer();
         scheduler = new TrackScheduler(player);
         provider = new LavaAudioProvider(player);
         player.addListener(scheduler);

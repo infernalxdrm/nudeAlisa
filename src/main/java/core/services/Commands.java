@@ -11,10 +11,12 @@ import core.services.help.mainHelp;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.rest.util.Color;
 import reactor.core.publisher.Mono;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -86,7 +88,12 @@ public class Commands implements Service {
                 .then());
         // Command for showing playlist
         commands.put("q",event -> event.getMessage().getChannel()
-        .flatMap(channel->channel.createMessage(GuildAudioManager.of(event.getGuildId().get()).getScheduler().getPlayList()))
+                .flatMap(channel -> channel.createEmbed(spec -> spec.setColor(Color.DARK_GOLDENROD)
+                        .setThumbnail(mainHelp.photo)
+                        .setDescription(GuildAudioManager.of(event.getGuildId().get()).getScheduler().getPlayList())
+                        .setTimestamp(Instant.now())
+                        .setTitle("Playlist")
+                ))
         .then());
         // Command for looping the track
         commands.put("loop",event -> event.getMessage().getChannel()

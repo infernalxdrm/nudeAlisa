@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 import java.time.Instant;
 
 public class mainHelp {
-    static final String photo = "https://i.imgur.com/dzn8huv.png";
+    static public final String photo = "https://i.imgur.com/dzn8huv.png";
 
     public static Mono<Void> getHelp(MessageCreateEvent event) {
         final MessageChannel channel = event.getMessage().getChannel().block();
@@ -17,7 +17,7 @@ public class mainHelp {
                      .setAuthor("Alica bot", "https://github.com/Kw0rker/nudeAlisa", photo)
                      .setImage(photo)
                      .setTitle("User's Guide")
-                     .setUrl("https://github.com/Kw0rker/nudeAlisa")
+                     .setUrl("https://github.com/Kw0rker/nudeAlisa/wiki/User's-guide")
                      .addField("addField", "Commands", true)
                      .setDescription("help - prints user's guide\n\n" +
                              "join - makes bot join the voice channel you're currently in\n\n" +

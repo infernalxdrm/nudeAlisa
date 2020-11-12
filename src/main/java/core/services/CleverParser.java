@@ -6,11 +6,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import net.sourceforge.htmlunit.corejs.javascript.NativeArray;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 
 public class CleverParser {
 
@@ -21,13 +19,13 @@ public class CleverParser {
         return instance;
     }
 
+    WebClient client;
     public void init() throws IOException {
         /* Suppress HtmlUnit logs */
         //LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
         //java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
         //java.util.logging.Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
-
-        WebClient client = new WebClient(BrowserVersion.BEST_SUPPORTED);
+        this.client = new WebClient(BrowserVersion.BEST_SUPPORTED);
         client.getOptions().setCssEnabled(false);
         client.getOptions().setUseInsecureSSL(true);
 
@@ -38,6 +36,14 @@ public class CleverParser {
         });
 
         this.page.set(client.getPage("https://cleverbot.com"));
+    }
+
+    public AtomicReference<HtmlPage> getPage() {
+        return page;
+    }
+
+    public WebClient getClient() {
+        return client;
     }
 
     public String sendAI(String text) throws IOException {

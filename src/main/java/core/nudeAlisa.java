@@ -5,6 +5,7 @@ import core.services.Properties;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import org.apache.log4j.PropertyConfigurator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -12,6 +13,7 @@ public class nudeAlisa {
     private static char prefix='+';
     public static GatewayDiscordClient client;
     public static void main(String[] args) {
+        PropertyConfigurator.configure("log4j.properties");
         if (args.length==0) System.err.print("No argc passed(no token)");
 
         final GatewayDiscordClient client = DiscordClientBuilder.create(args[0]).build()

@@ -27,7 +27,7 @@ public class AI implements answerable {
                     reply=parser.sendAI(message);
                 }*/
                if (reply.equals("")){
-                   reply="(⊙_⊙)？";
+                   reply = "Im thinking ";
                    restart();
                }
                return reply;
@@ -45,6 +45,7 @@ public class AI implements answerable {
     @Override
     public void restart() {
         try {
+            parser.getClient().close();
             parser.init();
         } catch (IOException e) {
             System.out.println(e.getMessage());
