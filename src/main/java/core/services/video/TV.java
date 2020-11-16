@@ -1,7 +1,12 @@
 package core.services.video;
 
+import discord4j.core.object.PermissionOverwrite;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.discordjson.json.PermissionsEditRequest;
+import discord4j.rest.util.Permission;
+import discord4j.rest.util.PermissionSet;
 import lombok.SneakyThrows;
 import reactor.core.publisher.Mono;
 
@@ -12,7 +17,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -62,6 +69,16 @@ public class TV {
     }
     @SneakyThrows
     public  Mono<Void> photo(Message event, String data){
+        final TextChannel channel = event.getGuild().map(guild -> guild.createTextChannel(chat -> {
+            chat.setName(data.substring(data.lastIndexOf("/")).length() >= 100 ? "PIXEL ART" : data.substring(data.lastIndexOf("/")))
+                    .setNsfw(true)
+                    .setTopic("PIXEL ARTS")
+                    .setPermissionOverwrites(new HashSet<>(Arrays.asList(
+                            PermissionOverwrite.forMember(event.getClient().getSelfId(), PermissionSet.all(), PermissionSet.none()),
+                            PermissionOverwrite.forRole(event.getGuild().block().getEveryoneRole().block().getId(), PermissionSet.none(), PermissionSet.all())
+
+                    )));
+        }).block()).block(); // probably error is here
         BufferedImage image = null;
         try {
             String [] dataSet=data.split(" ");
@@ -119,7 +136,6 @@ public class TV {
         }
         StringBuilder builder=new StringBuilder();
         BufferedImage resized=resizeImage(image,(int)(fullHD_x * toHD * size_persent), (int) (image.getHeight()*( (fullHD_x * toHD * size_persent)/image.getWidth())));
-        final MessageChannel channel = event.getChannel().block();
         for (int y = 0; y < resized.getHeight(); y++){
             for (int x =0;x <resized.getWidth();x++) {
                 int av_pixel=resized.getRGB(x,y);
@@ -149,14 +165,37 @@ public class TV {
             }
 
 
-
             channel.createMessage(builder.toString()).block();
             builder=new StringBuilder();
         }
-
+        channel.getRestChannel().editChannelPermissions(channel.getGuild().block().getEveryoneRole().block().getId(), (PermissionsEditRequest.builder()
+                .deny(0)
+                .allow(Permission.CONNECT.getValue())
+                .allow(Permission.VIEW_CHANNEL.getValue())
+                .allow(Permission.READ_MESSAGE_HISTORY.getValue())
+                .type(PermissionOverwrite.Type.ROLE.getValue())
+        ).build(), "bot has finished working in this channel ").block();
 
         //builder.append("\n");
-        return event.getChannel().then();
+        Message m = channel.createMessage("This channel will be deleted in: 10m").block();
+        new Thread(() -> {
+            int seconds = 10;
+            for (int i = 10; i < 600; i += 10) {
+                try {
+                    Thread.sleep(10000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                int minutes = (600 - i) / 60;
+                seconds = seconds > 60 ? 0 : seconds + 10; // TODO: 11/16/2020 I was too tired to make a good math here...
+                int finalI = i;
+                int finalSeconds = seconds;
+                m.edit(s -> s.setContent("This channel will be deleted in: " + minutes + "m;"
+                        + Math.abs(60 - finalSeconds) + "sk")).block();
+            }
+            channel.delete().block();
+        }).start();
+        return event.getChannel().block().createMessage(event.getAuthor().get().getMention() + " Your art is ready \n " + channel.getMention()).then();
         //return builder.toString();
     }
     static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) throws IOException {

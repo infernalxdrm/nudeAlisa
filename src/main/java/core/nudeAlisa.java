@@ -22,7 +22,6 @@ public class nudeAlisa {
         Properties properties=new Properties(client);
         nudeAlisa.client=client;
 
-
         client.getEventDispatcher().on(MessageCreateEvent.class)
                 .flatMap(event -> Mono.just(event.getMessage().getContent())
                         .flatMap(content -> Flux.fromIterable(Commands.commands.entrySet())
