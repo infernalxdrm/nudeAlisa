@@ -67,6 +67,15 @@ public class TV {
         return channel.createMessage("").then();
         //return builder.toString();
     }
+
+    public static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) throws IOException {
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = resizedImage.createGraphics();
+        graphics2D.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+        graphics2D.dispose();
+        return resizedImage;
+    }
+
     @SneakyThrows
     public  Mono<Void> photo(Message event, String data){
         final TextChannel channel = event.getGuild().map(guild -> guild.createTextChannel(chat -> {
@@ -134,6 +143,9 @@ public class TV {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (image == null) {
+            return channel.createMessage("Error occurred while processing image").then();
+        }
         StringBuilder builder=new StringBuilder();
         BufferedImage resized=resizeImage(image,(int)(fullHD_x * toHD * size_persent), (int) (image.getHeight()*( (fullHD_x * toHD * size_persent)/image.getWidth())));
         for (int y = 0; y < resized.getHeight(); y++){
@@ -197,12 +209,5 @@ public class TV {
         }).start();
         return event.getChannel().block().createMessage(event.getAuthor().get().getMention() + " Your art is ready \n " + channel.getMention()).then();
         //return builder.toString();
-    }
-    static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) throws IOException {
-        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB );
-        Graphics2D graphics2D = resizedImage.createGraphics();
-        graphics2D.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
-        graphics2D.dispose();
-        return resizedImage;
     }
 }
