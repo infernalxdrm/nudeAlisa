@@ -19,7 +19,7 @@ public class Parser  {
         final MessageChannel channel = e.getMessage().getChannel().block();
         String [] params=command.split(" ");
         switch (params[0]){
-            case "imgur" :
+            case "+imgur":
                 try {
 
                     int request_number= Integer.parseInt(params[1]);
@@ -35,7 +35,7 @@ public class Parser  {
                 }
                 break;
 
-            case "lightroom" :
+            case "+lightshot":
                 try {
                     int request_number= Integer.parseInt(params[1]);
                     if (request_number>100)return channel.createMessage("Number must be less than 100").then();
