@@ -11,6 +11,7 @@ import core.services.audio.TrackScheduler;
 import core.services.video.TV;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.voice.AudioProvider;
+import imageFun.imageFun;
 
 import java.util.ArrayList;
 
@@ -22,6 +23,7 @@ public class Properties  {
     // We will be creating LavaPlayerAudioProvider in the next step
     AudioProvider provider = new LavaAudioProvider(player);
     final TrackScheduler scheduler = new TrackScheduler(player);
+    final imageFun ImageFun = new imageFun();
     final static String id="<@!757526337408991304>";// TODO: 9/29/2020 its better to check by id not by string
     final AI aiMessage = new AI();//new AI();
     final TV tv=new TV();

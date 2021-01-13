@@ -1,5 +1,6 @@
 parsers\netstalking\validators\imgurValidator.class
 core\services\Commands.class
+imageFun\imageFun.class
 core\services\Command.class
 AiDungeon\AiDungeon.class
 parsers\netstalking\generators\screenshootsGenerator.class
@@ -22,6 +23,7 @@ core\services\help\mainHelp.class
 core\services\Parser.class
 core\services\video\TV.class
 core\services\Service.class
+core\services\video\ImagePr.class
 parsers\netstalking\generators\youtubeGenerator.class
 parsers\netstalking\imgurparser.class
 core\nudeAlisa.class

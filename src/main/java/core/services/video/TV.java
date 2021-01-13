@@ -144,7 +144,12 @@ public class TV {
             e.printStackTrace();
         }
         if (image == null) {
-            return channel.createMessage("Error occurred while processing image").then();
+            try {
+                channel.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return event.getChannel().block().createMessage("Error occurred while processing image").then();
         }
         StringBuilder builder=new StringBuilder();
         BufferedImage resized=resizeImage(image,(int)(fullHD_x * toHD * size_persent), (int) (image.getHeight()*( (fullHD_x * toHD * size_persent)/image.getWidth())));

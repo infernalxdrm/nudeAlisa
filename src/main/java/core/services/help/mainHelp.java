@@ -25,6 +25,7 @@ public class mainHelp {
                              "q - prints a current playlist\n\n" +
                              "loop - turns on and off current track repeat\n\n" +
                              "qloop - turns on and off playlist repeat\n\n" +
+                             "simp - issue a simp card for user tagged\n" +
                              "imgur - sends random pictures form the Imgur\n" +
                              "as a parameter takes the number of pictures user wants to receive (expl 'imgur 10'\n\n" +
                              "lightshot - sends random user's screenshots form the Lightshot\n" +

@@ -10,6 +10,7 @@ D:\nudeAlisa\src\main\java\parsers\netstalking\validators\validator.java
 D:\nudeAlisa\src\main\java\AiDungeon\AIDungeonSession.java
 D:\nudeAlisa\src\main\java\answerable\AI.java
 D:\nudeAlisa\src\main\java\AiDungeon\AiDungeon.java
+D:\nudeAlisa\src\main\java\imageFun\imageFun.java
 D:\nudeAlisa\src\main\java\AiDungeon\AiDungeonParser.java
 D:\nudeAlisa\src\main\java\core\services\Service.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\generators\screenshootsGenerator.java
@@ -25,4 +26,5 @@ D:\nudeAlisa\src\main\java\parsers\netstalking\generators\youtubeGenerator.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\generators\generator.java
 D:\nudeAlisa\src\main\java\core\nudeAlisa.java
 D:\nudeAlisa\src\main\java\core\services\audio\GuildAudioManager.java
+D:\nudeAlisa\src\main\java\core\services\video\ImagePr.java
 D:\nudeAlisa\src\main\java\core\services\video\TV.java
