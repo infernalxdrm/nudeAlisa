@@ -12,13 +12,13 @@ public class mainHelp {
 
     public static Mono<Void> getHelp(MessageCreateEvent event) {
         final MessageChannel channel = event.getMessage().getChannel().block();
+        assert channel != null;
         channel.createEmbed(spec ->
              spec.setColor(Color.RED)
                      .setAuthor("Alica bot", "https://github.com/Kw0rker/nudeAlisa", photo)
                      .setImage(photo)
                      .setTitle("User's Guide")
                      .setUrl("https://github.com/Kw0rker/nudeAlisa/wiki/User's-guide")
-                     .addField("addField", "Commands", true)
                      .setDescription("help - prints user's guide\n\n" +
                              "join - makes bot join the voice channel you're currently in\n\n" +
                              "play - plays a music from the link (bot must be in the voice channel. Type join to invite)\n\n" +
