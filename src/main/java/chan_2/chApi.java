@@ -1,5 +1,20 @@
 package chan_2;
 
+import chan_2.JsonComponents.board;
+import chan_2.JsonComponents.thread;
+import com.google.gson.Gson;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.rest.util.Color;
+import reactor.core.publisher.Mono;
+import utils.StringCutter;
+import utils.htmlToDiscord;
+import utils.httpUtil;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class chApi {
     public String getBoards() {
         return "\n" +
@@ -99,6 +114,112 @@ public class chApi {
                 "/fet/ - фетиш\n" +
                 "/sex/ - секс и отношения\n" +
                 "/fag/ - фагготрия";
+    }
+
+    public static Mono<Void> help(MessageCreateEvent event) {
+        final MessageChannel channel = event.getMessage().getChannel().block();
+        assert channel != null;
+
+
+        channel.createEmbed(spec ->
+                spec.setColor(Color.RED)
+                        //.setAuthor("Alica bot", "https://github.com/Kw0rker/nudeAlisa", "https://2ch.hk/ing/thumb/1186/14616819779650s.jpg")
+                        .setImage("https://2ch.hk/ing/thumb/1186/14616819779650s.jpg")
+                        .setTitle("Alisa 2ch guide")
+                        .setUrl("https://2ch.hk/")
+                        .setDescription(
+                                "2ch_boards - list all 2ch boards\n" +
+                                        "2ch_board - as parameter take board's name")
+
+                        //  .setThumbnail(photo)
+                        //.setFooter("Made by Kworker#0101", photo)
+                        .setTimestamp(Instant.now())
+        ).block();
+        return event.getMessage().getChannel().then();
+    }
+
+    public board getBoradFromLink(String link) {
+        Gson gson = new Gson();
+
+        return gson.fromJson(httpUtil.getRequestResponse(link), board.class);
+    }
+
+    public Mono<Void> proceed(MessageCreateEvent e) {
+
+        final MessageChannel channel = e.getMessage().getChannel().block();
+        assert channel != null;
+        String boardname;
+        try {
+            boardname = e.getMessage().getContent().split(" ")[1];
+        } catch (ArrayIndexOutOfBoundsException es) {
+            return e.getMessage().getChannel().then();
+        }
+        String link = "https://2ch.hk/" + boardname + "/catalog_num.json";
+        board board = getBoradFromLink(link);
+        for (thread t : board.threads) {
+            String comment = htmlToDiscord.normalize(t.getComment());
+            AtomicInteger filesAdded = new AtomicInteger();
+            int index = 1500;
+            List<String> strings = StringCutter.cut(comment, index);
+            for (int i = 0; i < strings.size(); i++) {
+
+                if (i == strings.size() - 1) {
+                    int finalI = i;
+                    channel.createEmbed(spec ->
+                            spec.setColor(Color.RED)
+                                    .setAuthor(t.getName(), null, null)
+                                    .setImage(1 >= t.getFiles().length ? "https://i.imgur.com/dzn8huv.png" : "https://2ch.hk" + t.getFiles()[filesAdded.getAndIncrement()].path) //change.
+                                    .setTitle(t.getSubject())
+                                    .setUrl(link)
+                                    .setDescription(strings.get(finalI))
+                                    .addField("Постов в треде", String.valueOf(t.getPosts_count()), true)
+                                    .addField("Просмотры", String.valueOf(t.getViews()), false)
+                                    .addField("Популярность", String.valueOf(t.getScore()), false)
+                                    .addField("Дата", t.getDate(), false)
+                    ).block();
+                    if (filesAdded.get() >= t.getFiles().length) {
+                        filesAdded.set(0);
+                    }
+                } else {
+                    int finalI1 = i;
+                    channel.createEmbed(spec ->
+                            spec.setColor(Color.RED)
+                                    .setImage(1 >= t.getFiles().length ? "https://i.imgur.com/dzn8huv.png" : "https://2ch.hk" + t.getFiles()[filesAdded.getAndIncrement()].path) //change.
+                                    .setDescription(strings.get(finalI1)))
+                            .block();
+                    if (filesAdded.get() >= t.getFiles().length) {
+                        filesAdded.set(0);
+                    }
+                }
+            }
+            for (int a = filesAdded.get(); a < t.getFiles().length; a++) {
+                int finalA = a;
+                channel.createEmbed(spec ->
+                        spec.setColor(Color.RED)
+                                .setAuthor(t.getName(), null, null)
+                                .setImage("https://2ch.hk" + t.getFiles()[finalA].path)
+                                .setTitle(t.getSubject())
+                ).block();
+            }
+
+//            channel.createEmbed(spec ->
+//                    spec.setColor(Color.RED)
+//                            .setAuthor(t.getName(), null,null)
+//                            .setImage(t.getFiles()==null? "https://i.imgur.com/dzn8huv.png" : "https://2ch.hk"+t.getFiles()[0].path )
+//                            .setTitle(t.getSubject())
+//                            .setUrl(link)
+//                            .setDescription(htmlToDiscord.normalize(t.getComment()))
+//                            .addField("Постов в треде", String.valueOf(t.getPosts_count()), true)
+//                            .addField("Просмотры", String.valueOf(t.getViews()), false)
+//                            .addField("Популярность",String.valueOf(t.getScore()),false)
+//                            .addField("Дата",t.getDate(),false)
+//                            //.addField()
+//                            //.setThumbnail(photo)
+//                            //.setFooter("Made by Kworker#0101", photo)
+//                            //.setTimestamp(Instant.now())
+//            ).block();
+        }
+        return e.getMessage().getChannel().then();
     }
 
 }

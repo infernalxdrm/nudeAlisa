@@ -26,6 +26,7 @@ public class mainHelp {
                              "loop - turns on and off current track repeat\n\n" +
                              "qloop - turns on and off playlist repeat\n\n" +
                              "simp - issue a simp card for user tagged\n" +
+                             "2ch help - 2ch browser help\n" +
                              "imgur - sends random pictures form the Imgur\n" +
                              "as a parameter takes the number of pictures user wants to receive (expl 'imgur 10'\n\n" +
                              "lightshot - sends random user's screenshots form the Lightshot\n" +
@@ -36,7 +37,7 @@ public class mainHelp {
                      .addField("Supported resolutions", "https://imgur.com/a/hqeQwv5", true)
                      .addField("Ping", "if you ping Alisa with message, she will reply to you", false)
                      .setThumbnail(photo)
-                     .setFooter("Made by Kworker#0101", photo)
+                     .setFooter("Made by Kworker#7042", photo)
                      .setTimestamp(Instant.now())
         ).block();
         return event.getMessage().getChannel().then();

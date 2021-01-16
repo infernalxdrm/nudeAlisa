@@ -1,6 +1,7 @@
 package core.services;
 
 import answerable.AI;
+import chan_2.chApi;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -22,6 +23,7 @@ public class Properties  {
     final AudioPlayer player = playerManager.createPlayer();
     // We will be creating LavaPlayerAudioProvider in the next step
     AudioProvider provider = new LavaAudioProvider(player);
+    chApi _2ch_ = new chApi();
     final TrackScheduler scheduler = new TrackScheduler(player);
     final imageFun ImageFun = new imageFun();
     final static String id="<@!757526337408991304>";// TODO: 9/29/2020 its better to check by id not by string

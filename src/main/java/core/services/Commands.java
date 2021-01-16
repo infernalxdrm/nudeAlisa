@@ -1,6 +1,7 @@
 package core.services;
 
 import AiDungeon.AiDungeon;
+import chan_2.chApi;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -125,13 +126,17 @@ public class Commands implements Service {
             )
        .then());
        commands.put("tv",event ->properties.tv.test(event.getMessage()));
-        commands.put("help", event -> mainHelp.getHelp(event));
+        commands.put("help", mainHelp::getHelp);
         commands.put("pixelart", event -> properties.tv.photo(event.getMessage(), event.getMessage().getContent().substring(10)));
         commands.put("simp", event -> properties.ImageFun.simp(event, event.getMessage().getContent().substring(6)));
+        commands.put("2ch help", chApi::help);
+        commands.put("2ch_boards", event -> event.getMessage().getChannel().flatMap(channel -> channel.createMessage(properties._2ch_.getBoards())).then());
+        commands.put("2ch_board", event -> properties._2ch_.proceed(event));
 
         // TODO: 11/8/2020 rearrange commands
         ////// AIGUNGEON COMMANDS ////////////
         commands.put("dungeon_start", AiDungeon::init);
+        altCommands.put("2ch", event -> properties._2ch_.proceed(event));
 
     }
 

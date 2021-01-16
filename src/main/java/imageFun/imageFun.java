@@ -45,7 +45,7 @@ public class imageFun {
                 BufferedImage im = ImagePr.addText(
                         ImagePr.overlayImages(ImagePr.readImage(simpLink), imageProcessor.changeResolution(ImagePr.readImage(member.getAvatarUrl(discord4j.rest.util.Image.Format.PNG).get()
 
-                        ), 220, 325), 49, 64),
+                        ), 220, 325), 49, 74),
                         lol(member.getTag()), 375, 375, new Color(83, 70, 64), 28);
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 try {
