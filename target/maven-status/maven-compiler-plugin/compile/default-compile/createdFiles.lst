@@ -1,13 +1,18 @@
+chan_2\JsonComponents\file.class
 parsers\netstalking\validators\imgurValidator.class
 core\services\Commands.class
 imageFun\imageFun.class
+chan_2\JsonComponents\board.class
 core\services\Command.class
+utils\StringCutter.class
 AiDungeon\AiDungeon.class
 parsers\netstalking\generators\screenshootsGenerator.class
 youtube\youtube.class
 parsers\netstalking\validators\validator.class
 AiDungeon\AiDungeonParser.class
 core\services\audio\TrackScheduler.class
+chan_2\chApi.class
+chan_2\JsonComponents\thread.class
 parsers\netstalking\generators\imgurGenerator.class
 core\services\audio\LavaAudioProvider.class
 AiDungeon\AIDungeonSession.class
@@ -20,6 +25,7 @@ core\services\Properties.class
 answerable\AI.class
 answerable\answerable.class
 core\services\help\mainHelp.class
+utils\htmlToDiscord.class
 core\services\Parser.class
 core\services\video\TV.class
 core\services\Service.class

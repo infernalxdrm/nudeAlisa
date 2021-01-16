@@ -1,6 +1,7 @@
 package chan_2;
 
 import chan_2.JsonComponents.board;
+import chan_2.JsonComponents.file;
 import chan_2.JsonComponents.thread;
 import com.google.gson.Gson;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -141,7 +142,27 @@ public class chApi {
     public board getBoradFromLink(String link) {
         Gson gson = new Gson();
 
-        return gson.fromJson(httpUtil.getRequestResponse(link), board.class);
+        try {
+            return gson.fromJson(httpUtil.getRequestResponse(link), board.class);
+        } catch (Exception e) {
+            board error = new board();
+            error.Board = " Errror";
+            error.threads = new thread[1];
+            thread t = new thread();
+            t.comment = e.getMessage();
+            t.lasthit = 0;
+            t.num = "0";
+            t.posts_count = 0;
+            t.subject = "Error";
+            t.timestamp = 0;
+            t.views = 1337;
+            t.date = "Я ебал кривой апи двача";
+            t.files = new file[0];
+            t.score = 0;
+            t.name = "xuy";
+            error.threads[0] = t;
+            return error;
+        }
     }
 
     public Mono<Void> proceed(MessageCreateEvent e) {
@@ -156,7 +177,9 @@ public class chApi {
         }
         String link = "https://2ch.hk/" + boardname + "/catalog_num.json";
         board board = getBoradFromLink(link);
+        int x = 0;
         for (thread t : board.threads) {
+            if (x >= 20) break;
             String comment = htmlToDiscord.normalize(t.getComment());
             AtomicInteger filesAdded = new AtomicInteger();
             int index = 1500;
@@ -218,6 +241,7 @@ public class chApi {
 //                            //.setFooter("Made by Kworker#0101", photo)
 //                            //.setTimestamp(Instant.now())
 //            ).block();
+            x++;
         }
         return e.getMessage().getChannel().then();
     }

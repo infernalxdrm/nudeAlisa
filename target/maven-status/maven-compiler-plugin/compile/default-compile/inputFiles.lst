@@ -1,13 +1,17 @@
 D:\nudeAlisa\src\main\java\core\services\audio\LavaAudioProvider.java
+D:\nudeAlisa\src\main\java\chan_2\JsonComponents\file.java
 D:\nudeAlisa\src\main\java\core\services\Commands.java
+D:\nudeAlisa\src\main\java\chan_2\chApi.java
 D:\nudeAlisa\src\main\java\core\services\CleverParser.java
 D:\nudeAlisa\src\main\java\youtube\youtube.java
 D:\nudeAlisa\src\main\java\core\services\help\mainHelp.java
+D:\nudeAlisa\src\main\java\utils\htmlToDiscord.java
 D:\nudeAlisa\src\main\java\core\services\Command.java
 D:\nudeAlisa\src\main\java\utils\httpUtil.java
 D:\nudeAlisa\src\main\java\core\services\Properties.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\validators\validator.java
 D:\nudeAlisa\src\main\java\AiDungeon\AIDungeonSession.java
+D:\nudeAlisa\src\main\java\chan_2\JsonComponents\thread.java
 D:\nudeAlisa\src\main\java\answerable\AI.java
 D:\nudeAlisa\src\main\java\AiDungeon\AiDungeon.java
 D:\nudeAlisa\src\main\java\imageFun\imageFun.java
@@ -26,5 +30,7 @@ D:\nudeAlisa\src\main\java\parsers\netstalking\generators\youtubeGenerator.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\generators\generator.java
 D:\nudeAlisa\src\main\java\core\nudeAlisa.java
 D:\nudeAlisa\src\main\java\core\services\audio\GuildAudioManager.java
+D:\nudeAlisa\src\main\java\utils\StringCutter.java
+D:\nudeAlisa\src\main\java\chan_2\JsonComponents\board.java
 D:\nudeAlisa\src\main\java\core\services\video\ImagePr.java
 D:\nudeAlisa\src\main\java\core\services\video\TV.java
