@@ -1,3 +1,5 @@
+package chan_2;
+
 public class chApi {
     public String getBoards() {
         return "\n" +
