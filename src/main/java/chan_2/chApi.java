@@ -1,11 +1,12 @@
 package chan_2;
 
-import chan_2.JsonComponents.board;
-import chan_2.JsonComponents.file;
-import chan_2.JsonComponents.thread;
+import chan_2.JsonComponents.*;
 import com.google.gson.Gson;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.rest.util.Color;
 import reactor.core.publisher.Mono;
 import utils.StringCutter;
@@ -13,7 +14,10 @@ import utils.htmlToDiscord;
 import utils.httpUtil;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class chApi {
@@ -165,6 +169,28 @@ public class chApi {
         }
     }
 
+    public threadBoard getThreadBoardFormLink(String link) {
+        Gson gson = new Gson();
+        try {
+            return gson.fromJson(httpUtil.getRequestResponse(link), threadBoard.class);
+        } catch (Exception e) {
+            threadBoard error = new threadBoard();
+            error.Board = " Errror";
+            error.threads = new posts[1];
+            post p = new post();
+            p.comment = e.getMessage();
+            p.date = "Я ебал кривой апи двача";
+            p.files = new file[0];
+            p.subject = "Error";
+            posts posts = new posts();
+            posts.posts = new post[1];
+            posts.posts[0] = p;
+            error.threads[0] = posts;
+            return error;
+
+        }
+    }
+
     public Mono<Void> proceed(MessageCreateEvent e) {
 
         final MessageChannel channel = e.getMessage().getChannel().block();
@@ -177,9 +203,25 @@ public class chApi {
         }
         String link = "https://2ch.hk/" + boardname + "/catalog_num.json";
         board board = getBoradFromLink(link);
-        int x = 0;
-        for (thread t : board.threads) {
-            if (x >= 20) break;
+        AtomicInteger f = new AtomicInteger(0);
+        work(e, channel, boardname, link, board, f.get());
+        Message m1 = channel.createMessage("Continue reading this board ? ").block();
+        m1.addReaction(ReactionEmoji.unicode("\u27A1")).block();
+        channel.getClient().getEventDispatcher().on(ReactionAddEvent.class)
+                .filter(reactionAddEvent -> {
+                    return
+                            reactionAddEvent.getMessage().block().equals(m1)
+                                    && reactionAddEvent.getEmoji().equals(ReactionEmoji.unicode("\u27A1"))
+                                    && !(reactionAddEvent.getMember().get().isBot());
+                })
+                .map(s -> work(e, channel, boardname, link, board, f.incrementAndGet()))
+                .subscribe();
+        return e.getMessage().getChannel().then();
+    }
+
+    private Mono<Void> work(MessageCreateEvent e, MessageChannel channel, String boardname, String link, board board, int f) {
+        for (int z = 20 * f; z < 20 * (f + 1) && z < board.threads.length; z++) {
+            thread t = board.threads[z];
             String comment = htmlToDiscord.normalize(t.getComment());
             AtomicInteger filesAdded = new AtomicInteger();
             int index = 1500;
@@ -214,34 +256,88 @@ public class chApi {
                         filesAdded.set(0);
                     }
                 }
+
             }
             for (int a = filesAdded.get(); a < t.getFiles().length; a++) {
                 int finalA = a;
                 channel.createEmbed(spec ->
-                        spec.setColor(Color.RED)
-                                .setAuthor(t.getName(), null, null)
-                                .setImage("https://2ch.hk" + t.getFiles()[finalA].path)
-                                .setTitle(t.getSubject())
+                                spec.setColor(Color.RED)
+                                        .setFooter(t.getSubject(), null)
+                                        //  .setAuthor(t.getName(), null, null)
+                                        .setImage("https://2ch.hk" + t.getFiles()[finalA].path)
+                        //.setTitle(t.getSubject())
                 ).block();
             }
+            Message m1 = channel.createMessage("Continue reading this thread ? ").block();
+            m1.addReaction(ReactionEmoji.unicode("\u27A1")).block();
+            channel.getClient().getEventDispatcher().on(ReactionAddEvent.class)
+                    .filter(reactionAddEvent -> {
+                        return
+                                reactionAddEvent.getMessage().block().equals(m1)
+                                        && reactionAddEvent.getEmoji().equals(ReactionEmoji.unicode("\u27A1"))
+                                        && !(reactionAddEvent.getMember().get().isBot());
+                    })
+                    .map(s -> proceedThreadBoard("https://2ch.hk/" + boardname + "/res/" + t.getNum() + ".json", e))
+                    .subscribe();
 
-//            channel.createEmbed(spec ->
-//                    spec.setColor(Color.RED)
-//                            .setAuthor(t.getName(), null,null)
-//                            .setImage(t.getFiles()==null? "https://i.imgur.com/dzn8huv.png" : "https://2ch.hk"+t.getFiles()[0].path )
-//                            .setTitle(t.getSubject())
-//                            .setUrl(link)
-//                            .setDescription(htmlToDiscord.normalize(t.getComment()))
-//                            .addField("Постов в треде", String.valueOf(t.getPosts_count()), true)
-//                            .addField("Просмотры", String.valueOf(t.getViews()), false)
-//                            .addField("Популярность",String.valueOf(t.getScore()),false)
-//                            .addField("Дата",t.getDate(),false)
-//                            //.addField()
-//                            //.setThumbnail(photo)
-//                            //.setFooter("Made by Kworker#0101", photo)
-//                            //.setTimestamp(Instant.now())
-//            ).block();
-            x++;
+
+//            channel.getClient().getEventDispatcher().on(ReactionAddEvent.class)
+//                    .map(ReactionAddEvent::getEmoji)
+//                    .filter(reactionEmoji -> ReactionEmoji.unicode("\u27A1").equals(reactionEmoji))
+//                    .map(reactionEmoji -> )
+//                    .subscribe();
+        }
+        return e.getMessage().getChannel().then();
+    }
+
+    public Mono<Void> proceedThreadBoard(String link, MessageCreateEvent e) {
+        final MessageChannel channel = e.getMessage().getChannel().block();
+        assert channel != null;
+        threadBoard t = getThreadBoardFormLink(link);
+        post[] posts = t.getThreads()[0].posts;
+        Stack<post> postsStack = new Stack<>();
+        List<post> list = Arrays.asList(posts);
+        Collections.reverse(list);
+        postsStack.addAll(list);
+        for (int i = 0; i < 20; i++) {
+            AtomicInteger filesAdded = new AtomicInteger(0);
+            post p = postsStack.pop();
+            List<String> comments = StringCutter.cut(htmlToDiscord.normalize(p.comment), 1500);
+            for (int j = 0; j < comments.size() - 1; j++) {
+                String com = comments.get(j);
+                channel.createEmbed(message ->
+                        message.setColor(Color.DARK_GOLDENROD)
+                                .setDescription(com)
+                                .setImage("https://2ch.hk/" + p.files[filesAdded.getAndIncrement()].path)
+                )
+                        .block();
+                if (filesAdded.get() >= p.files.length) filesAdded.set(0);
+            }
+            if (p.files.length > 0)
+                channel.createEmbed(message ->
+                        message.setTitle(p.subject)
+                                .setAuthor(p.name, null, null)
+                                .addField("Дата", p.date, false)
+                                .setDescription(comments.get(comments.size() - 1))
+                                .setColor(Color.DARK_GOLDENROD)
+                                .setImage("https://2ch.hk/" + p.files[filesAdded.getAndIncrement()].path)
+                )
+
+                        .block();
+            else channel.createEmbed(message ->
+                    message.setTitle(p.subject)
+                            .setAuthor(p.name, null, null)
+                            .addField("Дата", p.date, false)
+                            .setDescription(comments.get(comments.size() - 1))
+                            .setColor(Color.DARK_GOLDENROD)).block();
+
+
+            for (int a = filesAdded.get(); a < p.files.length; a++) {
+                channel.createEmbed(message ->
+                        message.setColor(Color.DARK_GOLDENROD)
+                                .setImage("https://2ch.hk/" + p.files[filesAdded.getAndIncrement()].path))
+                        .block();
+            }
         }
         return e.getMessage().getChannel().then();
     }

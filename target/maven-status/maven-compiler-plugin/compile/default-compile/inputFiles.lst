@@ -4,6 +4,7 @@ D:\nudeAlisa\src\main\java\core\services\Commands.java
 D:\nudeAlisa\src\main\java\chan_2\chApi.java
 D:\nudeAlisa\src\main\java\core\services\CleverParser.java
 D:\nudeAlisa\src\main\java\youtube\youtube.java
+D:\nudeAlisa\src\main\java\chan_2\JsonComponents\post.java
 D:\nudeAlisa\src\main\java\core\services\help\mainHelp.java
 D:\nudeAlisa\src\main\java\utils\htmlToDiscord.java
 D:\nudeAlisa\src\main\java\core\services\Command.java
@@ -28,9 +29,11 @@ D:\nudeAlisa\src\main\java\parsers\netstalking\validators\youtubeValidator.java
 D:\nudeAlisa\src\main\java\core\services\Parser.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\generators\youtubeGenerator.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\generators\generator.java
+D:\nudeAlisa\src\main\java\chan_2\JsonComponents\posts.java
 D:\nudeAlisa\src\main\java\core\nudeAlisa.java
 D:\nudeAlisa\src\main\java\core\services\audio\GuildAudioManager.java
 D:\nudeAlisa\src\main\java\utils\StringCutter.java
 D:\nudeAlisa\src\main\java\chan_2\JsonComponents\board.java
 D:\nudeAlisa\src\main\java\core\services\video\ImagePr.java
 D:\nudeAlisa\src\main\java\core\services\video\TV.java
+D:\nudeAlisa\src\main\java\chan_2\JsonComponents\threadBoard.java

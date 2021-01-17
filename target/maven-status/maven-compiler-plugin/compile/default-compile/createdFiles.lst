@@ -12,10 +12,12 @@ parsers\netstalking\validators\validator.class
 AiDungeon\AiDungeonParser.class
 core\services\audio\TrackScheduler.class
 chan_2\chApi.class
+chan_2\JsonComponents\post.class
 chan_2\JsonComponents\thread.class
 parsers\netstalking\generators\imgurGenerator.class
 core\services\audio\LavaAudioProvider.class
 AiDungeon\AIDungeonSession.class
+chan_2\JsonComponents\posts.class
 parsers\netstalking\generators\generator.class
 core\services\audio\GuildAudioManager.class
 utils\httpUtil.class
@@ -26,6 +28,7 @@ answerable\AI.class
 answerable\answerable.class
 core\services\help\mainHelp.class
 utils\htmlToDiscord.class
+chan_2\JsonComponents\threadBoard.class
 core\services\Parser.class
 core\services\video\TV.class
 core\services\Service.class
