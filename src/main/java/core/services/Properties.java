@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
+import core.ReactionListener;
 import core.services.audio.LavaAudioProvider;
 import core.services.audio.TrackScheduler;
 import core.services.video.TV;
@@ -23,7 +24,8 @@ public class Properties  {
     final AudioPlayer player = playerManager.createPlayer();
     // We will be creating LavaPlayerAudioProvider in the next step
     AudioProvider provider = new LavaAudioProvider(player);
-    chApi _2ch_ = new chApi();
+    public ReactionListener listener;
+    chApi _2ch_ = new chApi(this);
     final TrackScheduler scheduler = new TrackScheduler(player);
     final imageFun ImageFun = new imageFun();
     final static String id="<@!757526337408991304>";// TODO: 9/29/2020 its better to check by id not by string
@@ -40,6 +42,10 @@ public class Properties  {
         //...
         //init setup for services you added
         services.forEach(service -> service.setup(this));
+    }
+
+    public ReactionListener getListener() {
+        return listener;
     }
 
     public AudioPlayerManager getPlayerManager() {

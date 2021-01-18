@@ -15,6 +15,7 @@ public class htmlToDiscord {
                 .replaceAll("<strong>", "**")
                 .replaceAll("</strong>", "**")
                 .replaceAll(" &quot", "\"")
+                .replaceAll("<span class=\"unkfunc\">&gt;", "")
                 .replaceAll("<span class=\"s\">", "||");
     }
 }

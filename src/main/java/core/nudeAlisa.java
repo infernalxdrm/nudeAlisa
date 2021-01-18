@@ -5,6 +5,7 @@ import core.services.Properties;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
 import org.apache.log4j.PropertyConfigurator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -36,6 +37,12 @@ public class nudeAlisa {
                                 .filter(entry -> content.startsWith(entry.getKey()))
                                 .flatMap(entry -> entry.getValue().execute(event))
                                 .next()))
+                .subscribe();
+        client.getEventDispatcher().on(ReactionAddEvent.class)
+                .flatMap(r -> {
+                    ReactionListener.proceedReaction(r);
+                    return r.getMessage().then();
+                })
                 .subscribe();
 
 

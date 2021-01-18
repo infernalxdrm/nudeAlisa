@@ -2,8 +2,9 @@ package chan_2;
 
 import chan_2.JsonComponents.*;
 import com.google.gson.Gson;
+import core.ReactionListener;
+import core.services.Properties;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
@@ -14,13 +15,15 @@ import utils.htmlToDiscord;
 import utils.httpUtil;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class chApi {
+    Properties p;
+
+    public chApi(Properties p) {
+        this.p = p;
+    }
     public String getBoards() {
         return "\n" +
                 "Разное\n" +
@@ -207,20 +210,31 @@ public class chApi {
         work(e, channel, boardname, link, board, f.get());
         Message m1 = channel.createMessage("Continue reading this board ? ").block();
         m1.addReaction(ReactionEmoji.unicode("\u27A1")).block();
-        channel.getClient().getEventDispatcher().on(ReactionAddEvent.class)
-                .filter(reactionAddEvent -> {
-                    return
-                            reactionAddEvent.getMessage().block().equals(m1)
-                                    && reactionAddEvent.getEmoji().equals(ReactionEmoji.unicode("\u27A1"))
-                                    && !(reactionAddEvent.getMember().get().isBot());
-                })
-                .map(s -> work(e, channel, boardname, link, board, f.incrementAndGet()))
-                .subscribe();
+
+
+        if (p.listener == null) {
+            p.listener = new ReactionListener(e.getGuildId().get());
+        }
+        p.listener.instructions.put(
+                Objects.hash(ReactionEmoji.unicode("\u27A1"), m1),
+                event -> work(e, channel, boardname, link, board, f.incrementAndGet())
+        );
+
+//        channel.getClient().getEventDispatcher().on(ReactionAddEvent.class)
+//                .filter(reactionAddEvent -> {
+//                    return
+//                            reactionAddEvent.getMessage().block().equals(m1)
+//                                    && reactionAddEvent.getEmoji().equals(ReactionEmoji.unicode("\u27A1"))
+//                                    && !(reactionAddEvent.getMember().get().isBot());
+//                })
+//                .map(s -> work(e, channel, boardname, link, board, f.incrementAndGet()))
+//                .subscribe();
+//        e.getGuildId().get()
         return e.getMessage().getChannel().then();
     }
 
     private Mono<Void> work(MessageCreateEvent e, MessageChannel channel, String boardname, String link, board board, int f) {
-        for (int z = 20 * f; z < 20 * (f + 1) && z < board.threads.length; z++) {
+        for (int z = 4 * f; z < 4 * (f + 1) && z < board.threads.length; z++) {
             thread t = board.threads[z];
             String comment = htmlToDiscord.normalize(t.getComment());
             AtomicInteger filesAdded = new AtomicInteger();
@@ -270,15 +284,22 @@ public class chApi {
             }
             Message m1 = channel.createMessage("Continue reading this thread ? ").block();
             m1.addReaction(ReactionEmoji.unicode("\u27A1")).block();
-            channel.getClient().getEventDispatcher().on(ReactionAddEvent.class)
-                    .filter(reactionAddEvent -> {
-                        return
-                                reactionAddEvent.getMessage().block().equals(m1)
-                                        && reactionAddEvent.getEmoji().equals(ReactionEmoji.unicode("\u27A1"))
-                                        && !(reactionAddEvent.getMember().get().isBot());
-                    })
-                    .map(s -> proceedThreadBoard("https://2ch.hk/" + boardname + "/res/" + t.getNum() + ".json", e))
-                    .subscribe();
+            if (p.listener == null) {
+                p.listener = new ReactionListener(e.getGuildId().get());
+            }
+            p.listener.instructions.put(
+                    Objects.hash(ReactionEmoji.unicode("\u27A1"), m1),
+                    event -> proceedThreadBoard("https://2ch.hk/" + boardname + "/res/" + t.getNum() + ".json", e)
+            );
+//            channel.getClient().getEventDispatcher().on(ReactionAddEvent.class)
+//                    .filter(reactionAddEvent -> {
+//                        return
+//                                reactionAddEvent.getMessage().block().equals(m1)
+//                                        && reactionAddEvent.getEmoji().equals(ReactionEmoji.unicode("\u27A1"))
+//                                        && !(reactionAddEvent.getMember().get().isBot());
+//                    })
+//                    .map(s -> proceedThreadBoard("https://2ch.hk/" + boardname + "/res/" + t.getNum() + ".json", e))
+//                    .subscribe();
 
 
 //            channel.getClient().getEventDispatcher().on(ReactionAddEvent.class)
@@ -294,12 +315,31 @@ public class chApi {
         final MessageChannel channel = e.getMessage().getChannel().block();
         assert channel != null;
         threadBoard t = getThreadBoardFormLink(link);
+        if (t == null) return e.getMessage().getChannel().then();
         post[] posts = t.getThreads()[0].posts;
         Stack<post> postsStack = new Stack<>();
         List<post> list = Arrays.asList(posts);
         Collections.reverse(list);
         postsStack.addAll(list);
-        for (int i = 0; i < 20; i++) {
+        int x = 0;
+        workFromThread(channel, postsStack, x);
+        Message m1 = channel.createMessage("Continue reading this thread ? ").block();
+        m1.addReaction(ReactionEmoji.unicode("\u27A1")).block();
+
+
+        AtomicInteger i = new AtomicInteger(0);
+        if (p.listener == null) {
+            p.listener = new ReactionListener(e.getGuildId().get());
+        }
+        p.listener.instructions.put(
+                Objects.hash(ReactionEmoji.unicode("\u27A1"), m1),
+                event -> workFromThread(channel, postsStack, i.incrementAndGet())
+        );
+        return e.getMessage().getChannel().then();
+    }
+
+    private Mono<Void> workFromThread(MessageChannel channel, Stack<post> postsStack, int x) {
+        for (int i = 4 * x; i < 4 * (x + 1) && postsStack.size() > 0; i++) {
             AtomicInteger filesAdded = new AtomicInteger(0);
             post p = postsStack.pop();
             List<String> comments = StringCutter.cut(htmlToDiscord.normalize(p.comment), 1500);
@@ -339,7 +379,7 @@ public class chApi {
                         .block();
             }
         }
-        return e.getMessage().getChannel().then();
+        return channel.getLastMessage().then();
     }
 
 }

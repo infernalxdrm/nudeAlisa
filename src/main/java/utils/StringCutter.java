@@ -15,7 +15,8 @@ public class StringCutter {
             }
             String s3 = s2.substring(0, s2.lastIndexOf("\n") > 0 ? s2.lastIndexOf("\n") : index);
 
-            strings.add(s3);
+            if (!(s3.contains("/a/res") || s3.contains("class=\"post-reply-link")))
+                strings.add(s3); // TODO: 1/18/2021 not in this class pls
 
             a += s3.length();
 
