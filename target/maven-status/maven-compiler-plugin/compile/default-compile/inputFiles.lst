@@ -5,6 +5,7 @@ D:\nudeAlisa\src\main\java\chan_2\chApi.java
 D:\nudeAlisa\src\main\java\core\services\CleverParser.java
 D:\nudeAlisa\src\main\java\youtube\youtube.java
 D:\nudeAlisa\src\main\java\chan_2\JsonComponents\post.java
+D:\nudeAlisa\src\main\java\core\services\ReactionCommand.java
 D:\nudeAlisa\src\main\java\core\services\help\mainHelp.java
 D:\nudeAlisa\src\main\java\utils\htmlToDiscord.java
 D:\nudeAlisa\src\main\java\core\services\Command.java
@@ -14,6 +15,7 @@ D:\nudeAlisa\src\main\java\parsers\netstalking\validators\validator.java
 D:\nudeAlisa\src\main\java\AiDungeon\AIDungeonSession.java
 D:\nudeAlisa\src\main\java\chan_2\JsonComponents\thread.java
 D:\nudeAlisa\src\main\java\answerable\AI.java
+D:\nudeAlisa\src\main\java\core\ReactionListener.java
 D:\nudeAlisa\src\main\java\AiDungeon\AiDungeon.java
 D:\nudeAlisa\src\main\java\imageFun\imageFun.java
 D:\nudeAlisa\src\main\java\AiDungeon\AiDungeonParser.java

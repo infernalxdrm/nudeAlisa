@@ -11,6 +11,7 @@ youtube\youtube.class
 parsers\netstalking\validators\validator.class
 AiDungeon\AiDungeonParser.class
 core\services\audio\TrackScheduler.class
+core\services\ReactionCommand.class
 chan_2\chApi.class
 chan_2\JsonComponents\post.class
 chan_2\JsonComponents\thread.class
@@ -18,6 +19,7 @@ parsers\netstalking\generators\imgurGenerator.class
 core\services\audio\LavaAudioProvider.class
 AiDungeon\AIDungeonSession.class
 chan_2\JsonComponents\posts.class
+core\ReactionListener.class
 parsers\netstalking\generators\generator.class
 core\services\audio\GuildAudioManager.class
 utils\httpUtil.class
