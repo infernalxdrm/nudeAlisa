@@ -335,7 +335,7 @@ public class chApi {
         final MessageChannel channel = e.getMessage().getChannel().block();
         assert channel != null;
         threadBoard t = getThreadBoardFormLink(link);
-        if (t == null) return e.getMessage().getChannel().then();
+        if (t == null || t.Board == null || t.Board.equals("")) return e.getMessage().getChannel().then();
         post[] posts = t.getThreads()[0].posts;
         Stack<post> postsStack = new Stack<>();
         List<post> list = Arrays.asList(posts);
