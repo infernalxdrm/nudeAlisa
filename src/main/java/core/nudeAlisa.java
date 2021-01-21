@@ -7,8 +7,11 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import org.apache.log4j.PropertyConfigurator;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.function.Function;
 
 public class nudeAlisa {
     private static char prefix='+';
@@ -39,10 +42,7 @@ public class nudeAlisa {
                                 .next()))
                 .subscribe();
         client.getEventDispatcher().on(ReactionAddEvent.class)
-                .flatMap(r -> {
-                    ReactionListener.proceedReaction(r);
-                    return r.getMessage().then();
-                })
+                .flatMap((Function<ReactionAddEvent, Publisher<?>>) ReactionListener::proceedReaction).next()
                 .subscribe();
 
 
