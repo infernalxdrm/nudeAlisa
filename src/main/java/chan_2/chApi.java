@@ -373,16 +373,28 @@ public class chApi {
                 //if (filesAdded.get() >= p.files.length) filesAdded.set(0);
             }
             if (p.files.length > 0)
-                channel.createEmbed(message ->
-                        message.setTitle(p.subject)
-                                .setAuthor(p.name, null, null)
-                                .addField("Дата", p.date, false)
-                                .setDescription(comments.get(comments.size() - 1))
-                                .setColor(Color.DARK_GOLDENROD)
-                                .setImage("https://2ch.hk/" + p.files[filesAdded.getAndIncrement()].path)
-                )
+                if (filesAdded.get() >= p.files.length) {
+                    channel.createEmbed(message ->
+                            message.setTitle(p.subject)
+                                    .setAuthor(p.name, null, null)
+                                    .addField("Дата", p.date, false)
+                                    .setDescription(comments.get(comments.size() - 1))
+                                    .setColor(Color.DARK_GOLDENROD)
+                    )
 
-                        .block();
+                            .block();
+                } else {
+                    channel.createEmbed(message ->
+                            message.setTitle(p.subject)
+                                    .setAuthor(p.name, null, null)
+                                    .addField("Дата", p.date, false)
+                                    .setDescription(comments.get(comments.size() - 1))
+                                    .setColor(Color.DARK_GOLDENROD)
+                                    .setImage("https://2ch.hk/" + p.files[filesAdded.getAndIncrement()].path)
+                    )
+
+                            .block();
+                }
             else channel.createEmbed(message ->
                     message.setTitle(p.subject)
                             .setAuthor(p.name, null, null)
