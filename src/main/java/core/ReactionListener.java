@@ -36,10 +36,14 @@ public class ReactionListener {
         System.out.println(instructions);
         System.out.println((Objects.hash(e.getEmoji(), e.getMessage())));
         //Listeners.get(e.getGuildId().get()).get(e.getMessageId()).execute(e).block();
-        ReactionCommand c = Listeners.get(e.getGuildId().get()).get(e.getMessageId());
-        System.out.println(c);
-        if (c == null) return e.getMessage().then();
-        return c.execute(e).then();
+        try {
+            ReactionCommand c = Listeners.get(e.getGuildId().get()).get(e.getMessageId());
+            System.out.println(c);
+            if (c == null) return e.getMessage().then();
+            return c.execute(e).then();
+        } catch (Exception es) {
+            return e.getMessage().then();
+        }
 
     }
 
