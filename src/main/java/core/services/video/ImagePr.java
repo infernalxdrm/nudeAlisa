@@ -106,7 +106,7 @@ public class ImagePr {
         }
     }
 
-    public BufferedImage changeResolution(BufferedImage i, int x, int y) {
+    public static BufferedImage changeResolution(BufferedImage i, int x, int y) {
         try {
             return TV.resizeImage(i, x, y);
         } catch (IOException e) {

@@ -132,6 +132,7 @@ public class Commands implements Service {
         commands.put("2ch help", chApi::help);
         commands.put("2ch_boards", event -> event.getMessage().getChannel().flatMap(channel -> channel.createMessage(properties._2ch_.getBoards())).then());
         commands.put("2ch_board", event -> properties._2ch_.proceed(event));
+        commands.put("nude", event -> properties.deepNude.getDeepNude(event));
 
         // TODO: 11/8/2020 rearrange commands
         ////// AIGUNGEON COMMANDS ////////////

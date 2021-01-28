@@ -11,6 +11,7 @@ import core.ReactionListener;
 import core.services.audio.LavaAudioProvider;
 import core.services.audio.TrackScheduler;
 import core.services.video.TV;
+import deepNude.DeepNudeProcced;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.voice.AudioProvider;
 import imageFun.imageFun;
@@ -25,6 +26,7 @@ public class Properties  {
     // We will be creating LavaPlayerAudioProvider in the next step
     AudioProvider provider = new LavaAudioProvider(player);
     public ReactionListener listener;
+    DeepNudeProcced deepNude = new DeepNudeProcced();
     chApi _2ch_ = new chApi(this);
     final TrackScheduler scheduler = new TrackScheduler(player);
     final imageFun ImageFun = new imageFun();
