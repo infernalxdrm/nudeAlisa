@@ -29,7 +29,7 @@ public class DeepNudeProcced {
             }
             synchronized (DeepNudeProcced.class) {
                 try {
-                    String invoke = "python3 /DeepNude_NoWatermark_withModel/main.py;";
+                    String invoke = "python3 " + System.getProperty("user.dir") + "/DeepNude_NoWatermark_withModel/main.py;";
                     Process deepNude = Runtime.getRuntime().exec(invoke);
                     new Thread(() -> {
                         while (deepNude.isAlive()) {
