@@ -6,6 +6,7 @@ chan_2\JsonComponents\board.class
 core\services\Command.class
 utils\StringCutter.class
 AiDungeon\AiDungeon.class
+deepNude\DeepNudeProcced.class
 parsers\netstalking\generators\screenshootsGenerator.class
 youtube\youtube.class
 parsers\netstalking\validators\validator.class
