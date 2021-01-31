@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class DeepNudeProcced {
-
+    @Deprecated //until the machine is ready for deep nude algorithm
     public Mono<Void> getDeepNude(MessageCreateEvent event) {
         event.getMessage().getAttachments().forEach(attachment -> {
             try {

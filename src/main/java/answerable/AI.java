@@ -17,10 +17,28 @@ public class AI implements answerable {
         }
     }
 
+    public static StringBuilder fixString(String message) {
+        char[] ap = message.toCharArray();
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < ap.length; i++) {
+            if (ap[i] == '<') {
+                i++;
+                while (i + 1 < ap.length && ap[i] != '>') {
+                    i++;
+                }
+
+            } else {
+                b.append(ap[i]);
+            }
+        }
+        return b;
+    }
+
     @Override
     public String respond(String message) {
+        StringBuilder b = fixString(message);
         try {
-            String reply=parser.sendAI(message);
+            String reply = parser.sendAI(b.toString().replaceAll("<", "").replaceAll(">", ""));
                 int reboot=0;
                 /*while (reply.equals("") || reboot++ < 15){
                     restart();

@@ -217,7 +217,7 @@ public class chApi {
     }
 
     private Mono<Void> work(MessageCreateEvent e, MessageChannel channel, String boardname, String link, board board, int f) {
-        if (board == null) return e.getMessage().getChannel().then();
+        if (board == null || board.threads == null) return e.getMessage().getChannel().then();
         if (!c) {
             p.listener = new ReactionListener(e.getGuildId().get());
             c = true;

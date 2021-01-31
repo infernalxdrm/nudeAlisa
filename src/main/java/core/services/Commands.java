@@ -1,6 +1,5 @@
 package core.services;
 
-import AiDungeon.AiDungeon;
 import chan_2.chApi;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -9,14 +8,17 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import core.nudeAlisa;
 import core.services.audio.GuildAudioManager;
 import core.services.help.mainHelp;
+import discord4j.core.event.domain.VoiceStateUpdateEvent;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.rest.util.Color;
 import reactor.core.publisher.Mono;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,6 +58,34 @@ public class Commands implements Service {
                     .flatMap(voiceChannel -> voiceChannel.join(spec->spec.setProvider(
                             GuildAudioManager.of(voiceChannel.getGuildId()).getProvider()
                     )))
+               .flatMap(s -> {
+                           GuildAudioManager.saveConnection(s);
+                           return Mono.first(Mono.delay(Duration.ofSeconds(10L))
+                                           .filterWhen(ignored -> Mono.justOrEmpty(event.getMember())
+                                                   .flatMap(Member::getVoiceState)
+                                                   .flatMap(VoiceState::getChannel)
+                                                   .map(VoiceChannel::getVoiceStates)
+                                                   .publish(c -> c.map(a -> 1 == a.count().block()))
+                                           )
+                                           .switchIfEmpty(Mono.never())
+                                           .then(),
+
+                                   event.getMessage().getClient().getEventDispatcher().on(VoiceStateUpdateEvent.class)
+                                           .filter(es -> es.getOld().flatMap(VoiceState::getChannelId).map(event.getMessage().getChannel().block().getId()::equals).orElse(false))
+                                           .filterWhen(ignored -> Mono.justOrEmpty(event.getMember())
+                                                   .flatMap(Member::getVoiceState)
+                                                   .flatMap(VoiceState::getChannel)
+                                                   .map(VoiceChannel::getVoiceStates)
+                                                   .publish(c -> c.map(a -> 1 == a.count().block()))
+                                           )
+
+                                           .next()
+                                           .then()
+                           );
+                       }
+
+
+               ).then(GuildAudioManager.getConnection(event.getGuildId().get()).disconnect())
        .then());
        // Command for bot to leave the Voice Channel
         // TODO: 9/27/2020 add command
@@ -132,11 +162,15 @@ public class Commands implements Service {
         commands.put("2ch help", chApi::help);
         commands.put("2ch_boards", event -> event.getMessage().getChannel().flatMap(channel -> channel.createMessage(properties._2ch_.getBoards())).then());
         commands.put("2ch_board", event -> properties._2ch_.proceed(event));
-        commands.put("nude", event -> properties.deepNude.getDeepNude(event));
+        commands.put("dc", event -> GuildAudioManager.getConnection(event.getGuildId().get()).disconnect());
+        commands.put("disconnect", event -> GuildAudioManager.getConnection(event.getGuildId().get()).disconnect());
+        commands.put("leave", event -> GuildAudioManager.getConnection(event.getGuildId().get()).disconnect());
+
+        //  commands.put("nude", event -> properties.deepNude.getDeepNude(event)); deprecated
 
         // TODO: 11/8/2020 rearrange commands
         ////// AIGUNGEON COMMANDS ////////////
-        commands.put("dungeon_start", AiDungeon::init);
+        // commands.put("dungeon_start", AiDungeon::init);
         altCommands.put("2ch", event -> properties._2ch_.proceed(event));
 
     }

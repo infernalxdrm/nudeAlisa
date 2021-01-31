@@ -117,4 +117,5 @@ public final class TrackScheduler extends AudioEventAdapter {
         playlist.remove(number);
         return true;
     }
+
 }

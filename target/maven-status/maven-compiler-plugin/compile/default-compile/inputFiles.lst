@@ -29,12 +29,15 @@ D:\nudeAlisa\src\main\java\parsers\netstalking\validators\screenshootsValidator.
 D:\nudeAlisa\src\main\java\deepNude\DeepNudeProcced.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\generators\imgurGenerator.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\validators\youtubeValidator.java
+D:\nudeAlisa\src\main\java\core\services\weather\weather.java
 D:\nudeAlisa\src\main\java\core\services\Parser.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\generators\youtubeGenerator.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\generators\generator.java
 D:\nudeAlisa\src\main\java\chan_2\JsonComponents\posts.java
 D:\nudeAlisa\src\main\java\core\nudeAlisa.java
 D:\nudeAlisa\src\main\java\core\services\audio\GuildAudioManager.java
+D:\nudeAlisa\src\main\java\core\services\weather\limit.java
+D:\nudeAlisa\src\main\java\core\services\weather\weatherJs.java
 D:\nudeAlisa\src\main\java\utils\StringCutter.java
 D:\nudeAlisa\src\main\java\chan_2\JsonComponents\board.java
 D:\nudeAlisa\src\main\java\core\services\video\ImagePr.java

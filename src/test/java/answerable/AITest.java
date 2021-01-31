@@ -1,6 +1,6 @@
 package answerable;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class AITest {
 
@@ -8,5 +8,10 @@ class AITest {
     void respond() {
         answerable ai= new AI().getInstance();
         System.out.println(ai.respond("Hello"));
+    }
+
+    @Test
+    void fixString() {
+        System.out.println(AI.fixString("hello  mom:224242424: xdddd:2113131:"));
     }
 }

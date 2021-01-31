@@ -4,9 +4,11 @@ core\services\Commands.class
 imageFun\imageFun.class
 chan_2\JsonComponents\board.class
 core\services\Command.class
+core\services\weather\weather.class
 utils\StringCutter.class
 AiDungeon\AiDungeon.class
 deepNude\DeepNudeProcced.class
+core\services\weather\weatherJs.class
 parsers\netstalking\generators\screenshootsGenerator.class
 youtube\youtube.class
 parsers\netstalking\validators\validator.class
@@ -23,6 +25,7 @@ chan_2\JsonComponents\posts.class
 core\ReactionListener.class
 parsers\netstalking\generators\generator.class
 core\services\audio\GuildAudioManager.class
+core\services\weather\limit.class
 utils\httpUtil.class
 core\services\CleverParser.class
 core\services\Commands$1.class
