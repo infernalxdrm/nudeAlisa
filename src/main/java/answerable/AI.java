@@ -2,6 +2,7 @@ package answerable;
 
 
 import core.services.CleverParser;
+import utils.Emoji;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ public class AI implements answerable {
     @Override
     public String respond(String message) {
         StringBuilder b = fixString(message);
+        if (b.toString().equals("")) return Emoji.getRandom();
         try {
             String reply = parser.sendAI(b.toString().replaceAll("<", "").replaceAll(">", ""));
                 int reboot=0;

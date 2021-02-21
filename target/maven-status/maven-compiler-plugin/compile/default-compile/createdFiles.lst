@@ -24,6 +24,7 @@ AiDungeon\AIDungeonSession.class
 chan_2\JsonComponents\posts.class
 core\ReactionListener.class
 parsers\netstalking\generators\generator.class
+utils\Emoji.class
 core\services\audio\GuildAudioManager.class
 core\services\weather\limit.class
 utils\httpUtil.class

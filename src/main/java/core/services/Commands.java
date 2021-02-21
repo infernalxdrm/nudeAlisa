@@ -8,17 +8,12 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import core.nudeAlisa;
 import core.services.audio.GuildAudioManager;
 import core.services.help.mainHelp;
-import discord4j.core.event.domain.VoiceStateUpdateEvent;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.rest.util.Color;
 import reactor.core.publisher.Mono;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,52 +36,58 @@ public class Commands implements Service {
                .getChannel().flatMap(chanel->
                chanel.createMessage("Hello"+event.getMessage().getAuthor().get().getMention())
                        .then()));
-       commands.put("test_file",event -> event.getMessage()
-       .getChannel()
-               .flatMap(chanel->chanel.createMessage(messageCreateSpec -> {
-                   try {
-                       messageCreateSpec.addFile("test",new FileInputStream("C:/Users/User/Pictures/test.png"));
-                   } catch (FileNotFoundException e) {
-                       e.printStackTrace();
-                   }
-               })
-               .then()));
+//       commands.put("test_file",event -> event.getMessage()
+//       .getChannel()
+//               .flatMap(chanel->chanel.createMessage(messageCreateSpec -> {
+//                   try {
+//                       messageCreateSpec.addFile("test",new FileInputStream("C:/Users/User/Pictures/test.png"));
+//                   } catch (FileNotFoundException e) {
+//                       e.printStackTrace();
+//                   }
+//               })
+//               .then()));
        // Command for bot to join Voice Channel
        commands.put("join",event -> Mono.justOrEmpty(event.getMember())
        .flatMap(Member::getVoiceState)
+
                .flatMap(VoiceState::getChannel)
                     .flatMap(voiceChannel -> voiceChannel.join(spec->spec.setProvider(
                             GuildAudioManager.of(voiceChannel.getGuildId()).getProvider()
                     )))
-               .flatMap(s -> {
-                           GuildAudioManager.saveConnection(s);
-                           return Mono.first(Mono.delay(Duration.ofSeconds(10L))
-                                           .filterWhen(ignored -> Mono.justOrEmpty(event.getMember())
-                                                   .flatMap(Member::getVoiceState)
-                                                   .flatMap(VoiceState::getChannel)
-                                                   .map(VoiceChannel::getVoiceStates)
-                                                   .publish(c -> c.map(a -> 1 == a.count().block()))
-                                           )
-                                           .switchIfEmpty(Mono.never())
-                                           .then(),
-
-                                   event.getMessage().getClient().getEventDispatcher().on(VoiceStateUpdateEvent.class)
-                                           .filter(es -> es.getOld().flatMap(VoiceState::getChannelId).map(event.getMessage().getChannel().block().getId()::equals).orElse(false))
-                                           .filterWhen(ignored -> Mono.justOrEmpty(event.getMember())
-                                                   .flatMap(Member::getVoiceState)
-                                                   .flatMap(VoiceState::getChannel)
-                                                   .map(VoiceChannel::getVoiceStates)
-                                                   .publish(c -> c.map(a -> 1 == a.count().block()))
-                                           )
-
-                                           .next()
-                                           .then()
-                           );
-                       }
-
-
-               ).then(GuildAudioManager.getConnection(event.getGuildId().get()).disconnect())
+               .flatMap(voiceConnection -> {
+                   GuildAudioManager.saveConnection(voiceConnection);
+                   return event.getMessage().getChannel().then();
+               })
        .then());
+
+//       commands.put("join",event -> event.getMessage().getChannel().flatMap(s -> {
+//           return Mono.first(Mono.delay(Duration.ofSeconds(10L))
+//                                   .filterWhen(ignored -> Mono.justOrEmpty(event.getMember())
+//                                           .flatMap(Member::getVoiceState)
+//                                           .flatMap(VoiceState::getChannel)
+//                                           .map(VoiceChannel::getVoiceStates)
+//                                           .publish(c -> c.map(a -> 1 == a.count().block()))
+//                                   )
+//                                   .switchIfEmpty(Mono.never())
+//                                   .then(),
+//
+//                           event.getMessage().getClient().getEventDispatcher().on(VoiceStateUpdateEvent.class)
+//                                   .filter(es -> es.getOld().flatMap(VoiceState::getChannelId).map(event.getMessage().getChannel().block().getId()::equals).orElse(false))
+//                                   .filterWhen(ignored -> Mono.justOrEmpty(event.getMember())
+//                                           .flatMap(Member::getVoiceState)
+//                                           .flatMap(VoiceState::getChannel)
+//                                           .map(VoiceChannel::getVoiceStates)
+//                                           .publish(c -> c.map(a -> 1 == a.count().block()))
+//                                   )
+//
+//                                   .next()
+//                                   .then()
+//                   );
+//               }
+//
+//
+//       ).then(GuildAudioManager.getConnection(event.getGuildId().get()).disconnect()));
+
        // Command for bot to leave the Voice Channel
         // TODO: 9/27/2020 add command
         // Command for playing music
