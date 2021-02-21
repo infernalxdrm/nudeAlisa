@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import discord4j.common.util.Snowflake;
 import discord4j.voice.VoiceConnection;
 import lombok.Data;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,6 +35,12 @@ public final class GuildAudioManager {
 
     public static VoiceConnection getConnection(Snowflake id) {
         return connectionMap.get(id);
+    }
+
+    public static Mono<Void> disconnect(Snowflake id) {
+        VoiceConnection connection = connectionMap.get(id);
+        connectionMap.remove(id);
+        return connection.disconnect();
     }
 
 
