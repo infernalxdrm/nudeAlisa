@@ -4,13 +4,17 @@ import core.services.Commands;
 import core.services.Properties;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.lifecycle.ConnectEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.presence.Activity;
+import discord4j.discordjson.json.gateway.StatusUpdate;
 import org.apache.log4j.PropertyConfigurator;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
 import java.util.function.Function;
 
 public class nudeAlisa {
@@ -25,7 +29,14 @@ public class nudeAlisa {
                 .block();
         Properties properties=new Properties(client);
         nudeAlisa.client=client;
-
+        client.on(ConnectEvent.class).flatMap(
+                event -> event.getClient().updatePresence(StatusUpdate.builder()
+                        .afk(false)
+                        .since(Instant.now().toEpochMilli())
+                        .game(Activity.listening("+help"))
+                        .status("Text me nya😘")
+                        .build())
+        ).next().subscribe();
         client.getEventDispatcher().on(MessageCreateEvent.class)
                 .flatMap(event -> Mono.just(event.getMessage().getContent())
                         .flatMap(content -> Flux.fromIterable(Commands.commands.entrySet())
