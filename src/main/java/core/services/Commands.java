@@ -163,9 +163,9 @@ public class Commands implements Service {
         commands.put("2ch help", chApi::help);
         commands.put("2ch_boards", event -> event.getMessage().getChannel().flatMap(channel -> channel.createMessage(properties._2ch_.getBoards())).then());
         commands.put("2ch_board", event -> properties._2ch_.proceed(event));
-        commands.put("dc", event -> GuildAudioManager.disconnect(event.getGuildId().get()));
-        commands.put("disconnect", event -> GuildAudioManager.disconnect(event.getGuildId().get()));
-        commands.put("leave", event -> GuildAudioManager.disconnect(event.getGuildId().get()));
+        commands.put("dc", event -> GuildAudioManager.of(event.getGuildId().get()).disconnect(event.getGuildId().get()));
+        commands.put("disconnect", event -> GuildAudioManager.of(event.getGuildId().get()).disconnect(event.getGuildId().get()));
+        commands.put("leave", event -> GuildAudioManager.of(event.getGuildId().get()).disconnect(event.getGuildId().get()));
 
         //  commands.put("nude", event -> properties.deepNude.getDeepNude(event)); deprecated
 

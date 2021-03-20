@@ -28,6 +28,9 @@ public final class TrackScheduler extends AudioEventAdapter {
         loopList= Collections.synchronizedList(new LinkedList<>());
     }
 
+    public void setloop(boolean s) {
+        isLooped = s;
+    }
     public List<AudioTrack> getQueue() {
         return playlist;
     }

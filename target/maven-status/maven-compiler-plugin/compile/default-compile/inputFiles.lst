@@ -1,4 +1,5 @@
 D:\nudeAlisa\src\main\java\core\services\audio\LavaAudioProvider.java
+D:\nudeAlisa\src\main\java\youtube\YoutubeSearch.java
 D:\nudeAlisa\src\main\java\chan_2\JsonComponents\file.java
 D:\nudeAlisa\src\main\java\core\services\Commands.java
 D:\nudeAlisa\src\main\java\utils\Emoji.java
@@ -35,6 +36,7 @@ D:\nudeAlisa\src\main\java\core\services\Parser.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\generators\youtubeGenerator.java
 D:\nudeAlisa\src\main\java\parsers\netstalking\generators\generator.java
 D:\nudeAlisa\src\main\java\chan_2\JsonComponents\posts.java
+D:\nudeAlisa\src\main\java\youtube\token.java
 D:\nudeAlisa\src\main\java\core\nudeAlisa.java
 D:\nudeAlisa\src\main\java\core\services\audio\GuildAudioManager.java
 D:\nudeAlisa\src\main\java\core\services\weather\limit.java

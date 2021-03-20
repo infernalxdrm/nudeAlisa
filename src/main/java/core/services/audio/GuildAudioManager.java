@@ -37,8 +37,14 @@ public final class GuildAudioManager {
         return connectionMap.get(id);
     }
 
-    public static Mono<Void> disconnect(Snowflake id) {
+    public Mono<Void> disconnect(Snowflake id) {
         VoiceConnection connection = connectionMap.get(id);
+        if (connection == null || !connection.isConnected().block()) return Mono.justOrEmpty("none").then();
+        scheduler.getQueue().clear();
+        player.stopTrack();
+        scheduler.playlist.clear();
+        scheduler.skip();
+        scheduler.setloop(false);
         connectionMap.remove(id);
         return connection.disconnect();
     }

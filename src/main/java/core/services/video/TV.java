@@ -1,5 +1,7 @@
 package core.services.video;
 
+import discord4j.common.util.Snowflake;
+import discord4j.core.object.Invite;
 import discord4j.core.object.PermissionOverwrite;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -54,6 +56,8 @@ public class TV {
     public static final int fullHD_x=1920;
     public static final int fullHD_y=1080;
     public  float toHD=0.666f; //0,6666
+    private Snowflake AlisaMain = Snowflake.of(777140126005854208L);
+
     public  Mono<Void> test(Message event){
         StringBuilder builder=new StringBuilder();
         final MessageChannel channel = event.getChannel().block();
@@ -78,7 +82,7 @@ public class TV {
 
     @SneakyThrows
     public  Mono<Void> photo(Message event, String data){
-        final TextChannel channel = event.getGuild().map(guild -> guild.createTextChannel(chat -> {
+        final TextChannel channel = event.getClient().getGuildById(AlisaMain).map(guild -> guild.createTextChannel(chat -> { // TODO: 3/20/2021 change even.getGuild() to guild of Alisa's channel
             chat.setName(data.substring(data.lastIndexOf("/")).length() >= 100 ? "PIXEL ART" : data.substring(data.lastIndexOf("/")))
                     .setNsfw(true)
                     .setTopic("PIXEL ARTS")
@@ -212,7 +216,12 @@ public class TV {
             }
             channel.delete().block();
         }).start();
-        return event.getChannel().block().createMessage(event.getAuthor().get().getMention() + " Your art is ready \n " + channel.getMention()).then();
+        return event.getChannel().block().createMessage(event.getAuthor().get().getMention() + " Your art is ready \n " + "https://discord.gg/" +
+                channel.createInvite(c -> c
+                        .setTemporary(true)
+                        .setReason("ART")
+                        .asRequest()
+                ).map(Invite::getCode).block()).then();
         //return builder.toString();
     }
 }
