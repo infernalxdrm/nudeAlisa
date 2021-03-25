@@ -40,12 +40,15 @@ public class instagram {
             in = new BufferedReader(new InputStreamReader(httpCon.getInputStream(), StandardCharsets.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
-            return new LinkedList<>();
+            List<String> l = new LinkedList<>();
+            l.add(e.getMessage());
+            return l;
         }
         String inputLine;
         StringBuilder a = new StringBuilder();
         List<String> links = new LinkedList<>();
         while ((inputLine = in.readLine()) != null)
+            System.out.println(inputLine);
             if (inputLine.contains("\"config_width\":1080"))
                 Arrays.stream(inputLine.replace("\\u0026", "&")
                         .split("https://"))
