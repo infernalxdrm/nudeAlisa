@@ -47,13 +47,14 @@ public class instagram {
         String inputLine;
         StringBuilder a = new StringBuilder();
         List<String> links = new LinkedList<>();
-        while ((inputLine = in.readLine()) != null)
+        while ((inputLine = in.readLine()) != null) {
             System.out.println(inputLine);
             if (inputLine.contains("\"config_width\":1080"))
                 Arrays.stream(inputLine.replace("\\u0026", "&")
                         .split("https://"))
                         .filter(po -> !po.contains("150x150"))
                         .forEach(s -> links.add("https://" + (s.split("\"")[0]) + ("\n")));
+        }
         in.close();
 
         //System.out.println(links.toString());
