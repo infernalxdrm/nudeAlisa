@@ -52,6 +52,15 @@ public class nudeAlisa {
                                 .flatMap(entry -> entry.getValue().execute(event))
                                 .next()))
                 .subscribe();
+
+        client.getEventDispatcher().on(MessageCreateEvent.class)
+                .flatMap(event -> Mono.just(event.getMessage().getContent())
+                        .flatMap(content -> Flux.fromIterable(Commands.specialCase.entrySet())
+                                .flatMap(entry -> entry.getValue().execute(event))
+                                .next()))
+                .subscribe();
+
+
         client.getEventDispatcher().on(ReactionAddEvent.class)
                 .flatMap((Function<ReactionAddEvent, Publisher<?>>) ReactionListener::proceedReaction).next()
                 .subscribe();

@@ -17,6 +17,7 @@ youtube\YoutubeSearch.class
 chan_2\JsonComponents\threadBoard.class
 youtube\token.class
 core\services\Parser.class
+instagram\instagram.class
 parsers\netstalking\imgurparser.class
 parsers\netstalking\validators\screenshootsValidator.class
 parsers\netstalking\validators\youtubeValidator.class

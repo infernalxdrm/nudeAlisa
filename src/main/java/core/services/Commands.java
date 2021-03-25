@@ -12,6 +12,7 @@ import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.rest.util.Color;
+import instagram.instagram;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 public class Commands implements Service {
     public static final HashMap<String, Command> commands=new HashMap<>();
     public static final HashMap<String,Command> altCommands=new HashMap<>();
+    public static final HashMap<String, Command> specialCase = new HashMap<>();
     public static boolean extraCheck(Message m){
         //add more
         return m.getUserMentionIds().contains(nudeAlisa.client.getSelfId());
@@ -55,38 +57,11 @@ public class Commands implements Service {
                             GuildAudioManager.of(voiceChannel.getGuildId()).getProvider()
                     )))
                .flatMap(voiceConnection -> {
-                   GuildAudioManager.saveConnection(voiceConnection);
+                   GuildAudioManager.of(voiceConnection.getGuildId()).saveConnection(voiceConnection);
                    return event.getMessage().getChannel().then();
                })
        .then());
 
-//       commands.put("join",event -> event.getMessage().getChannel().flatMap(s -> {
-//           return Mono.first(Mono.delay(Duration.ofSeconds(10L))
-//                                   .filterWhen(ignored -> Mono.justOrEmpty(event.getMember())
-//                                           .flatMap(Member::getVoiceState)
-//                                           .flatMap(VoiceState::getChannel)
-//                                           .map(VoiceChannel::getVoiceStates)
-//                                           .publish(c -> c.map(a -> 1 == a.count().block()))
-//                                   )
-//                                   .switchIfEmpty(Mono.never())
-//                                   .then(),
-//
-//                           event.getMessage().getClient().getEventDispatcher().on(VoiceStateUpdateEvent.class)
-//                                   .filter(es -> es.getOld().flatMap(VoiceState::getChannelId).map(event.getMessage().getChannel().block().getId()::equals).orElse(false))
-//                                   .filterWhen(ignored -> Mono.justOrEmpty(event.getMember())
-//                                           .flatMap(Member::getVoiceState)
-//                                           .flatMap(VoiceState::getChannel)
-//                                           .map(VoiceChannel::getVoiceStates)
-//                                           .publish(c -> c.map(a -> 1 == a.count().block()))
-//                                   )
-//
-//                                   .next()
-//                                   .then()
-//                   );
-//               }
-//
-//
-//       ).then(GuildAudioManager.getConnection(event.getGuildId().get()).disconnect()));
 
        // Command for bot to leave the Voice Channel
         // TODO: 9/27/2020 add command
@@ -173,6 +148,7 @@ public class Commands implements Service {
         ////// AIGUNGEON COMMANDS ////////////
         // commands.put("dungeon_start", AiDungeon::init);
         altCommands.put("2ch", event -> properties._2ch_.proceed(event));
+        specialCase.put("https://instagram", instagram::sendPreviews);
 
     }
 
