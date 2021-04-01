@@ -1,54 +1,66 @@
 package instagram;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
+import net.sourceforge.htmlunit.corejs.javascript.NativeArray;
 import reactor.core.publisher.Mono;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class instagram {
     private static final Map<Snowflake, Boolean> enabled = new ConcurrentHashMap<>();
+    WebClient client;
+    private AtomicReference<HtmlPage> page = new AtomicReference<>();
 
     private static List<String> getLinksToPreview(String origin) throws IOException {
-        URL url = new URL(origin);
+        URL url = null;
+        try {
+
+            url = new URL(origin);
+        } catch (MalformedURLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
         HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-        //set http request headers
-        //   httpCon.addRequestProperty("Host", "www.cumhuriyet.com.tr");
-        httpCon.addRequestProperty("Connection", "keep-alive");
-        httpCon.addRequestProperty("Cache-Control", "max-age=0");
-        httpCon.addRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-        httpCon.addRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36");
-        // httpCon.addRequestProperty("Accept-Encoding", "UTF-8");
-        // httpCon.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-        //httpCon.addRequestProperty("Cookie", "JSESSIONID=EC0F373FCC023CD3B8B9C1E2E2F7606C; lang=tr; __utma=169322547.1217782332.1386173665.1386173665.1386173665.1; __utmb=169322547.1.10.1386173665; __utmc=169322547; __utmz=169322547.1386173665.1.1.utmcsr=stackoverflow.com|utmccn=(referral)|utmcmd=referral|utmcct=/questions/8616781/how-to-get-a-web-pages-source-code-from-java; __gads=ID=3ab4e50d8713e391:T=1386173664:S=ALNI_Mb8N_wW0xS_wRa68vhR0gTRl8MwFA; scrElm=body");
-        HttpURLConnection.setFollowRedirects(false);
-        httpCon.setInstanceFollowRedirects(false);
-        httpCon.setDoOutput(true);
         httpCon.setUseCaches(true);
 
         httpCon.setRequestMethod("GET");
-        BufferedReader in;
+        BufferedReader in = null;
         try {
-            in = new BufferedReader(new InputStreamReader(httpCon.getInputStream(), StandardCharsets.UTF_8));
+            InputStreamReader inputStreamReader = new InputStreamReader(httpCon.getInputStream());
+            in = new BufferedReader(inputStreamReader);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String inputLine;
+        try {
+            InputStreamReader inputStreamReader = new InputStreamReader(httpCon.getInputStream());
+            in = new BufferedReader(inputStreamReader);
         } catch (Exception e) {
             e.printStackTrace();
             List<String> l = new LinkedList<>();
             l.add(e.getMessage());
             return l;
         }
-        String inputLine;
         StringBuilder a = new StringBuilder();
         List<String> links = new LinkedList<>();
         while ((inputLine = in.readLine()) != null) {
-            System.out.println(inputLine);
+            // System.out.println(inputLine);
             if (inputLine.contains("\"config_width\":1080"))
                 Arrays.stream(inputLine.replace("\\u0026", "&")
                         .split("https://"))
@@ -62,6 +74,15 @@ public class instagram {
         //    links.forEach(System.out::println);
         httpCon.disconnect();
         return links;
+    }
+
+    public static Mono<Void> sendPreviews(MessageCreateEvent e) {
+        if (!e.getMessage().getContent().contains("https://www.instagram.com/"))
+            return e.getMessage().getChannel().then();
+        final MessageChannel channel = e.getMessage().getChannel().block();
+        getPreviews(e.getMessage().getContent()).forEach(s -> channel.createMessage(s).block());
+
+        return e.getMessage().getChannel().then();
     }
 
     private static List<String> getBestResolution(List<String> links) {
@@ -80,12 +101,34 @@ public class instagram {
         }
     }
 
-    public static Mono<Void> sendPreviews(MessageCreateEvent e) {
-        if (!e.getMessage().getContent().contains("https:")) return e.getMessage().getChannel().then();
-        final MessageChannel channel = e.getMessage().getChannel().block();
-        getPreviews(e.getMessage().getContent()).forEach(s -> channel.createMessage(s).block());
+    public void login() throws IOException {
+        this.client = new WebClient(BrowserVersion.BEST_SUPPORTED);
+        client.getOptions().setCssEnabled(false);
+        client.getOptions().setUseInsecureSSL(true);
 
-        return e.getMessage().getChannel().then();
+        client.getOptions().setThrowExceptionOnScriptError(false);
+        client.getOptions().setThrowExceptionOnFailingStatusCode(false);
+
+        client.setIncorrectnessListener((arg0, arg1) -> {
+        });
+
+        this.page.set(client.getPage("https://www.instagram.com/accounts/login/?force_classic_login"));
+        final HtmlForm form = this.page.get().getForms().get(page.get().getForms().size() - 1);
+        System.out.println(form.asXml());
+        final HtmlTextInput user = form.getInputByName("username");
+
+        final HtmlPasswordInput password = form.getInputByName("enc_password");
+        user.type("Kworker_");
+        password.type("Halflife3?");
+        //final HtmlButton button=form.getButtonByName("button-green");
+        Object o = this.page.get().executeJavaScript("submit").getJavaScriptResult();
+        if (o instanceof net.sourceforge.htmlunit.corejs.javascript.NativeArray) {
+            System.out.println("ez");
+            System.out.println(((NativeArray) o).get(0).toString());
+        }
+
+        System.out.println(form.asXml());
     }
+
 }
 

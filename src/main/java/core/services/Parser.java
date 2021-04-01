@@ -21,12 +21,17 @@ public class Parser  {
         switch (params[0]){
             case "+imgur":
                 try {
-
-                    int request_number= Integer.parseInt(params[1]);
+                    int request_number = 0;
+                    try {
+                        request_number = Integer.parseInt(params[1]);
+                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
+                        return channel.createMessage("Missing number argument,see +help").then();
+                    }
                     if (request_number>100)return channel.createMessage("Number must be less than 100").then();
                     for (int i = 0; i < request_number; i++) {
                         try {
-                        channel.createMessage(imgurValidator.validate(imgurGenerator.generate()));}
+                            channel.createMessage(imgurValidator.validate(imgurGenerator.generate())).block();
+                        }
                         catch (RuntimeException se){i--;}
                     }
                 }
@@ -37,11 +42,17 @@ public class Parser  {
 
             case "+lightshot":
                 try {
-                    int request_number= Integer.parseInt(params[1]);
+                    int request_number = 0;
+                    try {
+                        request_number = Integer.parseInt(params[1]);
+                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
+                        return channel.createMessage("Missing number argument,see +help").then();
+                    }
                     if (request_number>100)return channel.createMessage("Number must be less than 100").then();
                     for (int i = 0; i < request_number; i++) {
                         try {
-                            channel.createMessage(lightshotValidator.validate(lightshotGenerator.generate()));}
+                            channel.createMessage(lightshotValidator.validate(lightshotGenerator.generate())).block();
+                        }
                         catch (RuntimeException se){i--;}
                     }
                 }
