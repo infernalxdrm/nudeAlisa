@@ -41,9 +41,11 @@ public class imageFun {
             if (param.contains("@")) {
                 LinkedList<Member> members = new LinkedList<>();
                 event.getMessage().getUserMentionIds().forEach(id -> members.add(event.getGuild().block().getMemberById(id).block()));
+                if (members.size() == 0)
+                    return event.getMessage().getChannel().map(channel -> channel.createMessage("User doesnt exist").then()).then();
                 Member member = members.get(0);
                 BufferedImage im = ImagePr.addText(
-                        ImagePr.overlayImages(ImagePr.readImage(simpLink), imageProcessor.changeResolution(ImagePr.readImage(member.getAvatarUrl(discord4j.rest.util.Image.Format.PNG).get()
+                        ImagePr.overlayImages(ImagePr.readImage(simpLink), ImagePr.changeResolution(ImagePr.readImage(member.getAvatarUrl(discord4j.rest.util.Image.Format.PNG).get()
 
                         ), 220, 325), 49, 74),
                         lol(member.getTag()), 375, 375, new Color(83, 70, 64), 28);
@@ -61,7 +63,7 @@ public class imageFun {
 
             } else if (param.contains("http")) {
                 BufferedImage im = ImagePr.addText(
-                        ImagePr.overlayImages(ImagePr.readImage(simpLink), imageProcessor.changeResolution(ImagePr.readImage(param), 220, 325), 49, 64),
+                        ImagePr.overlayImages(ImagePr.readImage(simpLink), ImagePr.changeResolution(ImagePr.readImage(param), 220, 325), 49, 64),
                         event.getMessage().getAuthor().get().getUsername(), 380, 365, new Color(83, 70, 64), 20);
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 ImageIO.write(im, "png", os);                          // Passing: ​(RenderedImage im, String formatName, OutputStream output)

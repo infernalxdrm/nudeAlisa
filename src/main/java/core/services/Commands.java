@@ -68,6 +68,7 @@ public class Commands implements Service {
         // Command for playing music
         commands.put("play", event -> Mono.justOrEmpty(event.getMessage().getContent())
                 .map(content -> Arrays.asList(content.split(" ")))
+                .filter(command -> command.size() != 1)
                 .doOnNext(command -> properties.getPlayerManager().loadItem(command.get(1), new AudioLoadResultHandler() {
                     @Override
                     public void trackLoaded(AudioTrack audioTrack) {
@@ -133,8 +134,15 @@ public class Commands implements Service {
        .then());
        commands.put("tv",event ->properties.tv.test(event.getMessage()));
         commands.put("help", mainHelp::getHelp);
-        commands.put("pixelart", event -> properties.tv.photo(event.getMessage(), event.getMessage().getContent().substring(10)));
-        commands.put("simp", event -> properties.ImageFun.simp(event, event.getMessage().getContent().substring(6)));
+        commands.put("pixelart", event ->
+                event.getMessage().getContent().contains(" ") ?
+                        properties.tv.photo(event.getMessage(), event.getMessage().getContent().substring(10)) :
+                        event.getMessage().getChannel().map(channel -> channel.createMessage("Missing arguments").block()).then())
+        ;
+        commands.put("simp", event ->
+                event.getMessage().getContent().contains(" ") ?
+                        properties.ImageFun.simp(event, event.getMessage().getContent().substring(6)) :
+                        event.getMessage().getChannel().map(channel -> channel.createMessage("Missing argument").block()).then()); // TODO: 4/6/2021 this fucing line doesnt work fix it
         commands.put("2ch help", chApi::help);
         commands.put("2ch_boards", event -> event.getMessage().getChannel().flatMap(channel -> channel.createMessage(properties._2ch_.getBoards())).then());
         commands.put("2ch_board", event -> properties._2ch_.proceed(event));
