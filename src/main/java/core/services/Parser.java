@@ -33,6 +33,13 @@ public class Parser  {
                             channel.createMessage(imgurValidator.validate(imgurGenerator.generate())).block();
                         }
                         catch (RuntimeException se){i--;}
+                        if (i % 5 == 0 && i != 0) {
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
                     }
                 }
                 catch (NumberFormatException ex){
@@ -54,6 +61,13 @@ public class Parser  {
                             channel.createMessage(lightshotValidator.validate(lightshotGenerator.generate())).block();
                         }
                         catch (RuntimeException se){i--;}
+                        if (i % 5 == 0 && i != 0) {
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
                     }
                 }
                 catch (NumberFormatException ex){
