@@ -14,6 +14,7 @@ public class Parser  {
     final static generator lightshotGenerator=new screenshootsGenerator();
     final static validator imgurValidator=new imgurValidator();
     final static validator lightshotValidator=new imgurValidator();
+    private static final int MAX_REQUEST = 4;
 
     Mono<Void> get(MessageCreateEvent  e,String command){
         final MessageChannel channel = e.getMessage().getChannel().block();
@@ -27,7 +28,8 @@ public class Parser  {
                     } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
                         return channel.createMessage("Missing number argument,see +help").then();
                     }
-                    if (request_number>100)return channel.createMessage("Number must be less than 100").then();
+                    if (request_number > MAX_REQUEST)
+                        return channel.createMessage("Number must be less than 100").then();
                     for (int i = 0; i < request_number; i++) {
                         try {
                             channel.createMessage(imgurValidator.validate(imgurGenerator.generate())).block();
@@ -55,7 +57,8 @@ public class Parser  {
                     } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
                         return channel.createMessage("Missing number argument,see +help").then();
                     }
-                    if (request_number>100)return channel.createMessage("Number must be less than 100").then();
+                    if (request_number > MAX_REQUEST)
+                        return channel.createMessage("Number must be less than 100").then();
                     for (int i = 0; i < request_number; i++) {
                         try {
                             channel.createMessage(lightshotValidator.validate(lightshotGenerator.generate())).block();
