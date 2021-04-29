@@ -29,7 +29,7 @@ public class Parser  {
                         return channel.createMessage("Missing number argument,see +help").then();
                     }
                     if (request_number > MAX_REQUEST)
-                        return channel.createMessage("Number must be less than 100").then();
+                        return channel.createMessage("Number must be less than " + MAX_REQUEST).then();
                     for (int i = 0; i < request_number; i++) {
                         try {
                             channel.createMessage(imgurValidator.validate(imgurGenerator.generate())).block();
@@ -58,7 +58,7 @@ public class Parser  {
                         return channel.createMessage("Missing number argument,see +help").then();
                     }
                     if (request_number > MAX_REQUEST)
-                        return channel.createMessage("Number must be less than 100").then();
+                        return channel.createMessage("Number must be less than " + MAX_REQUEST).then();
                     for (int i = 0; i < request_number; i++) {
                         try {
                             channel.createMessage(lightshotValidator.validate(lightshotGenerator.generate())).block();
