@@ -20,10 +20,11 @@ import java.util.function.Function;
 public class nudeAlisa {
     private static char prefix='+';
     public static GatewayDiscordClient client;
+    public static String[] argc;
     public static void main(String[] args) {
         PropertyConfigurator.configure("log4j.properties");
         if (args.length==0) System.err.print("No argc passed(no token)");
-
+        nudeAlisa.argc = args;
         final GatewayDiscordClient client = DiscordClientBuilder.create(args[0]).build()
                 .login()
                 .block();

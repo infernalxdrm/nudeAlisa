@@ -7,6 +7,7 @@ parsers\netstalking\generators\screenshootsGenerator.class
 youtube\youtube.class
 chan_2\chApi.class
 chan_2\JsonComponents\thread.class
+instagram\ImageChecker.class
 AiDungeon\AIDungeonSession.class
 core\services\audio\GuildAudioManager.class
 utils\httpUtil.class

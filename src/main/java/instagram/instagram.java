@@ -6,18 +6,22 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import core.nudeAlisa;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
+import lombok.SneakyThrows;
 import net.sourceforge.htmlunit.corejs.javascript.NativeArray;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 import reactor.core.publisher.Mono;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,38 +29,23 @@ import java.util.concurrent.atomic.AtomicReference;
 public class instagram {
     private static final Map<Snowflake, Boolean> enabled = new ConcurrentHashMap<>();
     WebClient client;
+    static HashSet<Integer> added = new HashSet<>();
     private AtomicReference<HtmlPage> page = new AtomicReference<>();
 
     private static List<String> getLinksToPreview(String origin) throws IOException {
-        URL url = null;
-        try {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost(origin);
+        httpPost.setHeader("Cookie", "sessionid=" + nudeAlisa.argc[1]);
+        HttpResponse response = httpClient.execute(httpPost);
 
-            url = new URL(origin);
-        } catch (MalformedURLException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-        HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-        httpCon.setUseCaches(true);
-
-        httpCon.setRequestMethod("GET");
         BufferedReader in = null;
         try {
-            InputStreamReader inputStreamReader = new InputStreamReader(httpCon.getInputStream());
+            InputStreamReader inputStreamReader = new InputStreamReader(response.getEntity().getContent());
             in = new BufferedReader(inputStreamReader);
         } catch (Exception e) {
             e.printStackTrace();
         }
         String inputLine;
-        try {
-            InputStreamReader inputStreamReader = new InputStreamReader(httpCon.getInputStream());
-            in = new BufferedReader(inputStreamReader);
-        } catch (Exception e) {
-            e.printStackTrace();
-            List<String> l = new LinkedList<>();
-            l.add(e.getMessage());
-            return l;
-        }
         StringBuilder a = new StringBuilder();
         List<String> links = new LinkedList<>();
         while ((inputLine = in.readLine()) != null) {
@@ -72,7 +61,9 @@ public class instagram {
         //System.out.println(links.toString());
         links.removeIf(s -> s.contains("script"));
         //    links.forEach(System.out::println);
-        httpCon.disconnect();
+        //httpCon.disconnect();
+        // links.forEach(System.out::println);
+
         return links;
     }
 
@@ -80,25 +71,65 @@ public class instagram {
         if (!e.getMessage().getContent().contains("https://www.instagram.com/"))
             return e.getMessage().getChannel().then();
         final MessageChannel channel = e.getMessage().getChannel().block();
-        getPreviews(e.getMessage().getContent()).forEach(s -> channel.createMessage(s).block());
-
+        getPreviews(e.getMessage().getContent()).forEach(s -> channel.createMessage(chan -> chan.addFile("1.jpg", s)).block());
+        added.clear();
         return e.getMessage().getChannel().then();
     }
 
-    private static List<String> getBestResolution(List<String> links) {
-        links.removeIf(s -> !s.contains("https://instagram.fgum1-1.fna.fbcdn.net/v/t51.2885-15/e35"));
-        return links;
+    private static ArrayList<BufferedImage> getBestResolution(List<String> links) {
+        links.forEach(System.out::println);
+        ArrayList<BufferedImage> images = new ArrayList<>();
+
+        links.forEach(s -> {
+            BufferedImage i = download(s);
+            if (i != null) images.add(i);
+        });
+        images.sort(Comparator.comparingInt(BufferedImage::getHeight));
+        int x = images.get(images.size() - 1).getHeight();
+        images.removeIf(image -> image.getHeight() != x);
+        // links.forEach(l->links.forEach(s -> System.out.println(StringUtils.difference(s,l))));
+        //links.removeIf(s -> !s.contains("p1080x1080") || !s.contains("p2080x1350"));
+//        List<Integer> toRemove=new ArrayList<>();
+//        for (int i = 0; i < images.size(); i++) {
+//            for (int u=x+1;u<images.size();u++){
+//                if (images.get(i).get)toRemove.add(u);
+//            }
+//        }
+//        toRemove.forEach(id->images.remove(id));
+        return images;
     }
 
-    public static HashSet<String> getPreviews(String link) {
-        try {
-            return new HashSet<>(getBestResolution(getLinksToPreview(link)));
-        } catch (IOException e) {
-            e.printStackTrace();
-            HashSet<String> err = new HashSet<>();
-            err.add("ERRORRRRRRRR");
-            return err;
-        }
+    @SneakyThrows
+    private static BufferedImage download(String link) {
+        URL url = new URL(link);
+        URLConnection conn = url.openConnection();
+
+        // now you get the content length
+        int contentLength = conn.getContentLength();
+        // you can check size here using contentLength
+        if (added.contains(contentLength)) return null;
+        else added.add(contentLength);
+        InputStream in = conn.getInputStream();
+        return ImageIO.read(in);
+
+    }
+
+    @SneakyThrows
+    public static HashSet<InputStream> getPreviews(String link) {
+        HashSet<InputStream> streams = new HashSet<>();
+        ImageChecker c = new ImageChecker();
+        ArrayList<BufferedImage> images = getBestResolution(getLinksToPreview(link));
+        images.forEach(im -> {
+
+            try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+                ImageIO.write(im, "jpeg", os);                          // Passing: ​(RenderedImage im, String formatName, OutputStream output)
+                streams.add(new ByteArrayInputStream(os.toByteArray()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return streams;
+
     }
 
     public void login() throws IOException {
@@ -128,6 +159,25 @@ public class instagram {
         }
 
         System.out.println(form.asXml());
+    }
+
+    public static boolean check_if_images_are_same(BufferedImage i1, BufferedImage i2) {
+        final short offset = 25;
+        final short error = 4;
+        Random r = new Random();
+        int x = r.nextInt(i1.getWidth() - offset);
+        int y = r.nextInt(i1.getHeight() - offset);
+        int max_equal = offset * offset;
+        int equals = 0;
+        boolean same = false;
+        for (int x_ = 0; x_ < offset; x_++) {
+            for (int y_ = 0; y_ < offset; y_++) {
+                if (i1.getRGB(x + x_, y + y_) == i2.getRGB(x + x_, y + y_))
+                    equals++;//if pixels are same increase counter
+            }
+        }
+        if (equals >= max_equal - error) same = true;
+        return same;
     }
 
 }
