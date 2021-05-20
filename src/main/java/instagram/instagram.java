@@ -1,17 +1,10 @@
 package instagram;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import core.nudeAlisa;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import lombok.SneakyThrows;
-import net.sourceforge.htmlunit.corejs.javascript.NativeArray;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -24,15 +17,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class instagram {
+    private static InputStream video = null;
     private static final Map<Snowflake, Boolean> enabled = new ConcurrentHashMap<>();
-    WebClient client;
-    static HashSet<Integer> added = new HashSet<>();
-    private AtomicReference<HtmlPage> page = new AtomicReference<>();
+    // WebClient client;
+    HashSet<Integer> added = new HashSet<>();
+    //private AtomicReference<HtmlPage> page = new AtomicReference<>();
 
-    private static List<String> getLinksToPreview(String origin) throws IOException {
+    private List<String> getLinksToPreview(String origin) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(origin);
         httpPost.setHeader("Cookie", "sessionid=" + nudeAlisa.argc[1]);
@@ -67,21 +60,28 @@ public class instagram {
         return links;
     }
 
-    public static Mono<Void> sendPreviews(MessageCreateEvent e) {
+    public Mono<Void> sendPreviews(MessageCreateEvent e) {
         if (!e.getMessage().getContent().contains("https://www.instagram.com/"))
             return e.getMessage().getChannel().then();
         final MessageChannel channel = e.getMessage().getChannel().block();
         getPreviews(e.getMessage().getContent()).forEach(s -> channel.createMessage(chan -> chan.addFile("1.jpg", s)).block());
+        if (video != null) channel.createMessage(ch -> ch.addFile("video.mp4", video)).block();
         added.clear();
+        video = null;
         return e.getMessage().getChannel().then();
     }
 
-    private static ArrayList<BufferedImage> getBestResolution(List<String> links) {
-        links.forEach(System.out::println);
+    private ArrayList<BufferedImage> getBestResolution(List<String> links) {
+        //links.forEach(System.out::println);
         ArrayList<BufferedImage> images = new ArrayList<>();
 
         links.forEach(s -> {
-            BufferedImage i = download(s);
+            BufferedImage i = null;
+            if (s.contains(".mp4")) {
+                proceedVideo(s);
+                images.clear();
+                return;
+            } else i = download(s);
             if (i != null) images.add(i);
         });
         images.sort(Comparator.comparingInt(BufferedImage::getHeight));
@@ -99,8 +99,16 @@ public class instagram {
         return images;
     }
 
+    private void proceedVideo(String s) {
+        try {
+            video = new URL(s).openStream();
+        } catch (IOException e) {
+            //  e.printStackTrace();
+        }
+    }
+
     @SneakyThrows
-    private static BufferedImage download(String link) {
+    private BufferedImage download(String link) {
         URL url = new URL(link);
         URLConnection conn = url.openConnection();
 
@@ -115,7 +123,7 @@ public class instagram {
     }
 
     @SneakyThrows
-    public static HashSet<InputStream> getPreviews(String link) {
+    public HashSet<InputStream> getPreviews(String link) {
         HashSet<InputStream> streams = new HashSet<>();
         ImageChecker c = new ImageChecker();
         ArrayList<BufferedImage> images = getBestResolution(getLinksToPreview(link));
@@ -132,34 +140,34 @@ public class instagram {
 
     }
 
-    public void login() throws IOException {
-        this.client = new WebClient(BrowserVersion.BEST_SUPPORTED);
-        client.getOptions().setCssEnabled(false);
-        client.getOptions().setUseInsecureSSL(true);
-
-        client.getOptions().setThrowExceptionOnScriptError(false);
-        client.getOptions().setThrowExceptionOnFailingStatusCode(false);
-
-        client.setIncorrectnessListener((arg0, arg1) -> {
-        });
-
-        this.page.set(client.getPage("https://www.instagram.com/accounts/login/?force_classic_login"));
-        final HtmlForm form = this.page.get().getForms().get(page.get().getForms().size() - 1);
-        System.out.println(form.asXml());
-        final HtmlTextInput user = form.getInputByName("username");
-
-        final HtmlPasswordInput password = form.getInputByName("enc_password");
-        user.type("Kworker_");
-        password.type("Halflife3?");
-        //final HtmlButton button=form.getButtonByName("button-green");
-        Object o = this.page.get().executeJavaScript("submit").getJavaScriptResult();
-        if (o instanceof net.sourceforge.htmlunit.corejs.javascript.NativeArray) {
-            System.out.println("ez");
-            System.out.println(((NativeArray) o).get(0).toString());
-        }
-
-        System.out.println(form.asXml());
-    }
+//    public void login() throws IOException {
+//        this.client = new WebClient(BrowserVersion.BEST_SUPPORTED);
+//        client.getOptions().setCssEnabled(false);
+//        client.getOptions().setUseInsecureSSL(true);
+//
+//        client.getOptions().setThrowExceptionOnScriptError(false);
+//        client.getOptions().setThrowExceptionOnFailingStatusCode(false);
+//
+//        client.setIncorrectnessListener((arg0, arg1) -> {
+//        });
+//
+//        this.page.set(client.getPage("https://www.instagram.com/accounts/login/?force_classic_login"));
+//        final HtmlForm form = this.page.get().getForms().get(page.get().getForms().size() - 1);
+//        System.out.println(form.asXml());
+//        final HtmlTextInput user = form.getInputByName("username");
+//
+//        final HtmlPasswordInput password = form.getInputByName("enc_password");
+//        user.type("Kworker_");
+//        password.type("Halflife3?");
+//        //final HtmlButton button=form.getButtonByName("button-green");
+//        Object o = this.page.get().executeJavaScript("submit").getJavaScriptResult();
+//        if (o instanceof net.sourceforge.htmlunit.corejs.javascript.NativeArray) {
+//            System.out.println("ez");
+//            System.out.println(((NativeArray) o).get(0).toString());
+//        }
+//
+//        System.out.println(form.asXml());
+//    }
 
     public static boolean check_if_images_are_same(BufferedImage i1, BufferedImage i2) {
         final short offset = 25;

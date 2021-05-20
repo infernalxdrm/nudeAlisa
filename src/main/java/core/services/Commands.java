@@ -12,7 +12,7 @@ import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.rest.util.Color;
-import instagram.instagram;
+import instagram.InstagramManager;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -156,7 +156,9 @@ public class Commands implements Service {
         ////// AIGUNGEON COMMANDS ////////////
         // commands.put("dungeon_start", AiDungeon::init);
         altCommands.put("2ch", event -> properties._2ch_.proceed(event));
-        specialCase.put("https://instagram", instagram::sendPreviews);
+        specialCase.put("https://instagram", e -> InstagramManager.of(e.getGuildId().get())
+                .getService().sendPreviews(e)
+        );
 
     }
 

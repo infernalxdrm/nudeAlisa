@@ -28,6 +28,7 @@ chan_2\JsonComponents\board.class
 core\services\Command.class
 utils\StringCutter.class
 AiDungeon\AiDungeon.class
+instagram\InstagramManager.class
 parsers\netstalking\validators\validator.class
 AiDungeon\AiDungeonParser.class
 core\services\audio\TrackScheduler.class
