@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class instagram {
+    private static final short time_delay = 45;//sec
+    private int time_sicne_last = 1000;
     private static InputStream video = null;
     private static final Map<Snowflake, Boolean> enabled = new ConcurrentHashMap<>();
     // WebClient client;
@@ -61,14 +63,25 @@ public class instagram {
     }
 
     public Mono<Void> sendPreviews(MessageCreateEvent e) {
+        final MessageChannel channel = e.getMessage().getChannel().block();
+
         if (!e.getMessage().getContent().contains("https://www.instagram.com/"))
             return e.getMessage().getChannel().then();
-        final MessageChannel channel = e.getMessage().getChannel().block();
-        getPreviews(e.getMessage().getContent()).forEach(s -> channel.createMessage(chan -> chan.addFile("1.jpg", s)).block());
+        if (time_exeded()) {
+            channel.createMessage("Please wait " + (time_delay - time_sicne_last) + " seconds before sending again :heart:").block();
+            return e.getMessage().getChannel().then();
+        }
+        HashSet<InputStream> set = getPreviews(e.getMessage().getContent());
         if (video != null) channel.createMessage(ch -> ch.addFile("video.mp4", video)).block();
+        else set.forEach(s -> channel.createMessage(chan -> chan.addFile("1.jpg", s)).block());
         added.clear();
         video = null;
+        time_sicne_last = 0;
         return e.getMessage().getChannel().then();
+    }
+
+    private boolean time_exeded() {
+        return time_sicne_last < time_delay;
     }
 
     private ArrayList<BufferedImage> getBestResolution(List<String> links) {
@@ -77,16 +90,20 @@ public class instagram {
 
         links.forEach(s -> {
             BufferedImage i = null;
-            if (s.contains(".mp4")) {
+            if (s.contains(".mp4?")) {
+                if (s.contains("BaseURL")) return;
+                System.out.println(s);
                 proceedVideo(s);
-                images.clear();
                 return;
             } else i = download(s);
             if (i != null) images.add(i);
         });
         images.sort(Comparator.comparingInt(BufferedImage::getHeight));
-        int x = images.get(images.size() - 1).getHeight();
-        images.removeIf(image -> image.getHeight() != x);
+        if (video != null) images.clear();
+        if (images.size() >= 1) {
+            int x = images.get(images.size() - 1).getHeight();
+            images.removeIf(image -> image.getHeight() != x);
+        }
         // links.forEach(l->links.forEach(s -> System.out.println(StringUtils.difference(s,l))));
         //links.removeIf(s -> !s.contains("p1080x1080") || !s.contains("p2080x1350"));
 //        List<Integer> toRemove=new ArrayList<>();
@@ -105,6 +122,11 @@ public class instagram {
         } catch (IOException e) {
             //  e.printStackTrace();
         }
+    }
+
+    void incrementTimer() {
+        if (time_sicne_last == Integer.MAX_VALUE) time_sicne_last = 100;
+        time_sicne_last++;
     }
 
     @SneakyThrows

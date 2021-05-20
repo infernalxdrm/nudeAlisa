@@ -11,6 +11,7 @@ public class InstagramManager {
 
     private InstagramManager() {
         service = new instagram();
+        manageTimer();
     }
 
     public static InstagramManager of(Snowflake id) {
@@ -21,6 +22,16 @@ public class InstagramManager {
         return service;
     }
 
-    public void timer() {
+    public void manageTimer() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                    service.incrementTimer();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
