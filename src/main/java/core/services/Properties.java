@@ -12,6 +12,7 @@ import core.services.audio.LavaAudioProvider;
 import core.services.audio.TrackScheduler;
 import core.services.video.TV;
 import deepNude.DeepNudeProcced;
+import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.voice.AudioProvider;
 import imageFun.imageFun;
@@ -30,7 +31,7 @@ public class Properties  {
     chApi _2ch_ = new chApi(this);
     final TrackScheduler scheduler = new TrackScheduler(player);
     final imageFun ImageFun = new imageFun();
-    final static String id="<@!757526337408991304>";// TODO: 9/29/2020 its better to check by id not by string
+    public static Snowflake id;// TODO: 9/29/2020 its better to check by id not by string
     final AI aiMessage = new AI();//new AI();
     final TV tv=new TV();
 

@@ -8,9 +8,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import core.nudeAlisa;
 import core.services.audio.GuildAudioManager;
 import core.services.help.mainHelp;
+import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.rest.util.Color;
 import instagram.InstagramManager;
 import reactor.core.publisher.Mono;
@@ -127,9 +129,9 @@ public class Commands implements Service {
                 .then());
        commands.put("imgur",event -> new Parser().get(event,event.getMessage().getContent()));
         commands.put("lightshot", event -> new Parser().get(event, event.getMessage().getContent()));
-       altCommands.put(Properties.id, event -> event.getMessage().getChannel()
+        altCommands.put("", event -> event.getMessage().getChannel()
             .flatMap(channel ->
-                channel.createMessage(properties.aiMessage.getInstance().respond(event.getMessage().getContent().substring(Properties.id.length()-1)))
+                    getMessage(properties, event, channel)
             )
        .then());
        commands.put("tv",event ->properties.tv.test(event.getMessage()));
@@ -160,6 +162,16 @@ public class Commands implements Service {
                 .getService().sendPreviews(e)
         );
 
+    }
+
+    private Mono<Void> getMessage(Properties properties, MessageCreateEvent event, MessageChannel channel) {
+        if (event.getMessage().getUserMentionIds().contains(Properties.id)) {
+            try {
+                return channel.createMessage(properties.aiMessage.getInstance().respond(event.getMessage().getContent().substring(Properties.id.toString().length() - 1))).then();
+            } catch (Exception e) {
+                return event.getMessage().getChannel().then();
+            }
+        } else return event.getMessage().getChannel().then();
     }
 
 

@@ -30,6 +30,7 @@ public class nudeAlisa {
                 .block();
         Properties properties=new Properties(client);
         nudeAlisa.client=client;
+        Properties.id = client.getSelf().block().getId();
         client.on(ConnectEvent.class).flatMap(
                 event -> event.getClient().updatePresence(StatusUpdate.builder()
                         .afk(false)
