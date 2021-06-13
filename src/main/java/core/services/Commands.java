@@ -1,5 +1,6 @@
 package core.services;
 
+import answerable.answerableManager;
 import chan_2.chApi;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -40,6 +41,7 @@ public class Commands implements Service {
                .getChannel().flatMap(chanel->
                chanel.createMessage("Hello"+event.getMessage().getAuthor().get().getMention())
                        .then()));
+       commands.put("startHell",event -> event.getMessage().getChannel().flatMap(c->c.createMessage(nudeAlisa.client.getSelf().block().getMention()+" Tell me a fairy tale").then()));
 //       commands.put("test_file",event -> event.getMessage()
 //       .getChannel()
 //               .flatMap(chanel->chanel.createMessage(messageCreateSpec -> {
@@ -129,15 +131,10 @@ public class Commands implements Service {
                 .then());
        commands.put("imgur",event -> new Parser().get(event,event.getMessage().getContent()));
         commands.put("lightshot", event -> new Parser().get(event, event.getMessage().getContent()));
-        altCommands.put("", event -> event.getMessage().getChannel()
-            .flatMap(channel ->
-                    getMessage(properties, event, channel)
-            )
-       .then());
        commands.put("tv",event ->properties.tv.test(event.getMessage()));
         commands.put("help", mainHelp::getHelp);
         commands.put("pixelart", event ->
-                event.getMessage().getContent().contains(" ") ?
+                event.getMessage().getContent().split(" ").length==3 ?
                         properties.tv.photo(event.getMessage(), event.getMessage().getContent().substring(10)) :
                         event.getMessage().getChannel().map(channel -> channel.createMessage("Missing arguments").block()).then())
         ;
@@ -157,6 +154,11 @@ public class Commands implements Service {
         // TODO: 11/8/2020 rearrange commands
         ////// AIGUNGEON COMMANDS ////////////
         // commands.put("dungeon_start", AiDungeon::init);
+        altCommands.put("", event -> event.getMessage().getChannel()
+                .flatMap(channel ->
+                        getMessage(properties, event, channel)
+                )
+                .then());
         altCommands.put("2ch", event -> properties._2ch_.proceed(event));
         specialCase.put("https://instagram", e -> InstagramManager.of(e.getGuildId().get())
                 .getService().sendPreviews(e)
@@ -165,10 +167,14 @@ public class Commands implements Service {
     }
 
     private Mono<Void> getMessage(Properties properties, MessageCreateEvent event, MessageChannel channel) {
+
+
         if (event.getMessage().getUserMentionIds().contains(Properties.id)) {
             try {
-                return channel.createMessage(properties.aiMessage.getInstance().respond(event.getMessage().getContent().substring(Properties.id.toString().length() - 1))).then();
+                return channel.createMessage(answerableManager.of(event.getGuildId().get()).getAnwerable()
+                        .respond(event.getMessage().getContent().substring(nudeAlisa.client.getSelf().block().getMention().length() - 1),event.getGuild().block())).then();
             } catch (Exception e) {
+                e.printStackTrace();
                 return event.getMessage().getChannel().then();
             }
         } else return event.getMessage().getChannel().then();

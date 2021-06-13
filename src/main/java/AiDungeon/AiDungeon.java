@@ -37,7 +37,7 @@ public class AiDungeon implements answerable {
     }
 
     @Override
-    public String respond(String message) {
+    public String respond(String message,Object o) {
         return null;
     }
 

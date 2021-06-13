@@ -1,6 +1,7 @@
 package core.services;
 
 import answerable.AI;
+import answerable.answerable;
 import chan_2.chApi;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -8,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
 import core.ReactionListener;
+import core.services.audio.GuildAudioManager;
 import core.services.audio.LavaAudioProvider;
 import core.services.audio.TrackScheduler;
 import core.services.video.TV;
@@ -16,6 +18,7 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.voice.AudioProvider;
 import imageFun.imageFun;
+import answerable.answerableManager;
 
 import java.util.ArrayList;
 
@@ -32,7 +35,6 @@ public class Properties  {
     final TrackScheduler scheduler = new TrackScheduler(player);
     final imageFun ImageFun = new imageFun();
     public static Snowflake id;// TODO: 9/29/2020 its better to check by id not by string
-    final AI aiMessage = new AI();//new AI();
     final TV tv=new TV();
 
     public Properties(GatewayDiscordClient client){

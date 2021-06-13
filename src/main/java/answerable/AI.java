@@ -9,6 +9,8 @@ import java.util.Arrays;
 
 public class AI implements answerable {
     CleverParser parser;
+    String reply;
+    private boolean isWaiting;
 
     public AI() {
         parser = CleverParser.getInstance();
@@ -35,20 +37,26 @@ public class AI implements answerable {
         return b;
     }
 
+    /**
+     *
+     * @param message actual message ai response to
+     * @param lock  monitor that blocks threads of certain guild
+     * @return ai response to the message
+     */
     @Override
-    public String respond(String message) {
+   public String respond(String message,Object lock) {
         StringBuilder b = fixString(message);
         if (b.toString().equals("")) return Emoji.getRandom();
         try {
-            String reply = parser.sendAI(b.toString().replaceAll("<", "").replaceAll(">", ""));
+            synchronized (lock){reply = parser.sendAI(b.toString().replaceAll("<", "").replaceAll(">", ""));}
                 int reboot=0;
                 /*while (reply.equals("") || reboot++ < 15){
                     restart();
                     reply=parser.sendAI(message);
                 }*/
                if (reply.equals("")){
-                   reply = "Im thinking ";
-                   restart();
+                   reply = "Im thinking... ";
+                   new Thread(this::restart).start();
                }
                return reply;
         } catch (IOException e) {
@@ -63,7 +71,9 @@ public class AI implements answerable {
     }
 
     @Override
-    public void restart() {
+    synchronized public void restart() {
+        System.out.print("AI module is restarted\n");
+        if (reply!=null)return;
         try {
             parser.getClient().close();
             parser.init();

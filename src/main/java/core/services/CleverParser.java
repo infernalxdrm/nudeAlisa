@@ -18,14 +18,15 @@ public class CleverParser {
     public static CleverParser getInstance() {
         return instance;
     }
+    private static boolean created=false;
 
-    WebClient client;
-    public void init() throws IOException {
-        /* Suppress HtmlUnit logs */
-        //LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-        //java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
-        //java.util.logging.Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
-        this.client = new WebClient(BrowserVersion.BEST_SUPPORTED);
+    public static boolean isCreated() {
+        return created;
+    }
+
+    static WebClient client;
+    public static void create(){
+        client = new WebClient(BrowserVersion.BEST_SUPPORTED);
         client.getOptions().setCssEnabled(false);
         client.getOptions().setUseInsecureSSL(true);
 
@@ -34,6 +35,13 @@ public class CleverParser {
 
         client.setIncorrectnessListener((arg0, arg1) -> {
         });
+    }
+    public void init() throws IOException {
+        /* Suppress HtmlUnit logs */
+        //LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+        //java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
+        //java.util.logging.Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
+
 
         this.page.set(client.getPage("https://cleverbot.com"));
     }

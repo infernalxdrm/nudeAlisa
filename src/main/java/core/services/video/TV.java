@@ -82,6 +82,8 @@ public class TV {
 
     @SneakyThrows
     public  Mono<Void> photo(Message event, String data){
+        String [] dataSet=data.split(" ");
+        if ( !data.contains("https://") && !data.contains("http://") )return event.getChannel().block().createMessage("Link to the image is expected").then();
         final TextChannel channel = event.getClient().getGuildById(AlisaMain).map(guild -> guild.createTextChannel(chat -> { // TODO: 3/20/2021 change even.getGuild() to guild of Alisa's channel
             chat.setName(data.substring(data.lastIndexOf("/")).length() >= 100 ? "PIXEL ART" : data.substring(data.lastIndexOf("/")))
                     .setNsfw(true)
@@ -94,7 +96,6 @@ public class TV {
         }).block()).block(); // probably error is here
         BufferedImage image = null;
         try {
-            String [] dataSet=data.split(" ");
             final String urlStr = dataSet[0]; // link
             switch (dataSet[1].toLowerCase()){ //resolution
                 case "hd":
@@ -138,12 +139,18 @@ public class TV {
                     break;
             }
             final URL url = new URL(urlStr);
-            final HttpURLConnection connection = (HttpURLConnection) url
-                    .openConnection();
-            connection.setRequestProperty(
-                    "User-Agent",
-                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
-            image = ImageIO.read(connection.getInputStream()); //reading image from link
+            HttpURLConnection connection=null;
+            try {
+                connection = (HttpURLConnection) url
+                        .openConnection();
+                connection.setRequestProperty(
+                        "User-Agent",
+                        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
+                image = ImageIO.read(connection.getInputStream()); //reading image from link
+            }
+            catch (IOException e){
+                return event.getChannel().block().createMessage("Link is unavailable").then();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -216,7 +223,9 @@ public class TV {
             }
             channel.delete().block();
         }).start();
-        return event.getChannel().block().createMessage(event.getAuthor().get().getMention() + " Your art is ready \n " + "https://discord.gg/" +
+        return event.getChannel().block().createMessage(event.getAuthor().get().getMention() + " Your art is ready \n "
+                +"Please proceed to this link to view your art\n"
+                + "https://discord.gg/" +
                 channel.createInvite(c -> c
                         .setTemporary(true)
                         .setReason("ART")

@@ -9,6 +9,7 @@ chan_2\chApi.class
 chan_2\JsonComponents\thread.class
 instagram\ImageChecker.class
 AiDungeon\AIDungeonSession.class
+answerable\answerableManager.class
 core\services\audio\GuildAudioManager.class
 utils\httpUtil.class
 answerable\AI.class
@@ -16,7 +17,6 @@ core\services\help\mainHelp.class
 utils\htmlToDiscord.class
 youtube\YoutubeSearch.class
 chan_2\JsonComponents\threadBoard.class
-youtube\token.class
 core\services\Parser.class
 instagram\instagram.class
 parsers\netstalking\imgurparser.class

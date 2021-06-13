@@ -23,7 +23,10 @@ public class nudeAlisa {
     public static String[] argc;
     public static void main(String[] args) {
         PropertyConfigurator.configure("log4j.properties");
-        if (args.length==0) System.err.print("No argc passed(no token)");
+        if (args.length<=0) {
+            System.err.print("No argc passed(no token)");
+            System.exit(-1);
+        }
         nudeAlisa.argc = args;
         final GatewayDiscordClient client = DiscordClientBuilder.create(args[0]).build()
                 .login()
