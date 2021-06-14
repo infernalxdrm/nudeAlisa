@@ -42,6 +42,7 @@ public class answerableManager {
         }).start();
     }
     public answerable getAnwerable(){
+        timeSinceLastCall=0;//reset the timer when AI is called
         return aiMessage.getInstance();
     }
 }
