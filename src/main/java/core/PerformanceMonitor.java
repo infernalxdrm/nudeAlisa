@@ -81,9 +81,15 @@ public class PerformanceMonitor {
     }
     @SneakyThrows
     public static String neofetch()  {
-        if (!System.getProperty("os.name").toLowerCase().contains("nix"))return "Non unix system";
-    String s= new String(Runtime.getRuntime().exec("neofetch").getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-        return s;
+       // if (!System.getProperty("os.name").toLowerCase().contains("nix"))return "Non unix system";
+        try{
+            String s= new String(Runtime.getRuntime().exec("neofetch").getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            return s;
+        }
+        catch (Exception e){
+            return "Owo";
+        }
+
     }
     public static Mono<Void>__(MessageCreateEvent e){
        final MessageChannel channel = e.getMessage().getChannel().block();
