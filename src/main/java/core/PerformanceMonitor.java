@@ -6,8 +6,10 @@ import discord4j.core.object.entity.channel.TextChannel;
 import lombok.SneakyThrows;
 import reactor.core.publisher.Mono;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -83,8 +85,26 @@ public class PerformanceMonitor {
     public static String neofetch()  {
        // if (!System.getProperty("os.name").toLowerCase().contains("nix"))return "Non unix system";
         try{
-            String s= new String(Runtime.getRuntime().exec("neofetch").getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-            return s;
+            Process proc = Runtime.getRuntime().exec("neofetch");
+
+            BufferedReader stdInput = new BufferedReader(new
+                    InputStreamReader(proc.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new
+                    InputStreamReader(proc.getErrorStream()));
+
+            // Read the output from the command
+            StringBuilder b= new StringBuilder();
+            System.out.println("Here is the standard output of the command:\n");
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                b.append(s);
+            }
+            System.out.println("Here is the standard error of the command (if any):\n");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+            return b.toString();
         }
         catch (Exception e){
             return "Owo";
