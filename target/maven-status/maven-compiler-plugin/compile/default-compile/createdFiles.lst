@@ -12,6 +12,7 @@ AiDungeon\AIDungeonSession.class
 answerable\answerableManager.class
 core\services\audio\GuildAudioManager.class
 utils\httpUtil.class
+core\PerformanceMonitor.class
 answerable\AI.class
 core\services\help\mainHelp.class
 utils\htmlToDiscord.class

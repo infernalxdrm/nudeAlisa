@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import core.PerformanceMonitor;
 import core.nudeAlisa;
 import core.services.audio.GuildAudioManager;
 import core.services.help.mainHelp;
@@ -148,7 +149,7 @@ public class Commands implements Service {
         commands.put("dc", event -> GuildAudioManager.of(event.getGuildId().get()).disconnect(event.getGuildId().get()));
         commands.put("disconnect", event -> GuildAudioManager.of(event.getGuildId().get()).disconnect(event.getGuildId().get()));
         commands.put("leave", event -> GuildAudioManager.of(event.getGuildId().get()).disconnect(event.getGuildId().get()));
-
+        commands.put("stat", PerformanceMonitor::__);
         //  commands.put("nude", event -> properties.deepNude.getDeepNude(event)); deprecated
 
         // TODO: 11/8/2020 rearrange commands
