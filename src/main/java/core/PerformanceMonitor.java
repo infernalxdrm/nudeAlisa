@@ -114,11 +114,11 @@ public class PerformanceMonitor {
     }
     public static Mono<Void>__(MessageCreateEvent e){
        final MessageChannel channel = e.getMessage().getChannel().block();
-       StringBuilder b = new StringBuilder();
-       b.append("```css\n").append(neofetch()).append("\n```\n");
-        for (String s : b.toString().split("xuySplit")) {
-            channel.createMessage(s).block();
-        }
+      // StringBuilder b = new StringBuilder();
+      // b.append("```css\n").append(neofetch()).append("\n```\n");
+      //  for (String s : b.toString().split("xuySplit")) {
+     //       channel.createMessage(s).block();
+     //   }
        channel.createMessage(print()).block();
        return e.getMessage().getChannel().then();
     }
