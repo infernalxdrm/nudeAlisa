@@ -98,6 +98,7 @@ public class PerformanceMonitor {
             System.out.println("Here is the standard output of the command:\n");
             String s = null;
             while ((s = stdInput.readLine()) != null) {
+                if (b.length()+s.length()>=2000)b.append("xuySplit");
                 b.append(s);
             }
             System.out.println("Here is the standard error of the command (if any):\n");
@@ -115,8 +116,10 @@ public class PerformanceMonitor {
        final MessageChannel channel = e.getMessage().getChannel().block();
        StringBuilder b = new StringBuilder();
        b.append("```css\n").append(neofetch()).append("\n```\n");
+        for (String s : b.toString().split("xuySplit")) {
+            channel.createMessage(s).block();
+        }
        channel.createMessage(print()).block();
-       channel.createMessage(b.toString()).block();
        return e.getMessage().getChannel().then();
     }
 }
