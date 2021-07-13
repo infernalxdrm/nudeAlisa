@@ -27,11 +27,18 @@ public class instagram {
     HashSet<Integer> added = new HashSet<>();
     //private AtomicReference<HtmlPage> page = new AtomicReference<>();
 
-    private List<String> getLinksToPreview(String origin) throws IOException {
+    private List<String> getLinksToPreview(String origin)throws Exception  {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(origin);
         httpPost.setHeader("Cookie", "sessionid=" + nudeAlisa.argc[1]);
-        HttpResponse response = httpClient.execute(httpPost);
+        HttpResponse response=null;
+        try {
+         response = httpClient.execute(httpPost);
+        }
+        catch (Exception exception){
+            System.err.println(exception.getMessage());
+            return List.of();
+        }
 
         BufferedReader in = null;
         try {
@@ -51,7 +58,11 @@ public class instagram {
                         .filter(po -> !po.contains("150x150"))
                         .forEach(s -> links.add("https://" + (s.split("\"")[0]) + ("\n")));
         }
-        in.close();
+        try {
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //System.out.println(links.toString());
         links.removeIf(s -> s.contains("script"));
