@@ -22,6 +22,8 @@ import reactor.core.publisher.Mono;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class Commands implements Service {
     public static final HashMap<String, Command> commands=new HashMap<>();
@@ -71,34 +73,8 @@ public class Commands implements Service {
        // Command for bot to leave the Voice Channel
         // TODO: 9/27/2020 add command
         // Command for playing music
-        commands.put("play", event -> Mono.justOrEmpty(event.getMessage().getContent())
-                .map(content -> Arrays.asList(content.split(" ")))
-                .filter(command -> command.size() != 1)
-                .doOnNext(command -> properties.getPlayerManager().loadItem(command.get(1), new AudioLoadResultHandler() {
-                    @Override
-                    public void trackLoaded(AudioTrack audioTrack) {
-                        GuildAudioManager.of(event.getGuildId().get()).getScheduler().play(audioTrack,false);
-                    }
-
-                    @Override
-                    public void playlistLoaded(AudioPlaylist audioPlaylist) {
-                        GuildAudioManager.of(event.getGuildId().get()).getScheduler().getQueue().addAll(audioPlaylist.getTracks());
-                    }
-
-                    @Override
-                    public void noMatches() {
-
-                    }
-
-                    @Override
-                    public void loadFailed(FriendlyException e) {
-                            event.getMessage().getChannel()
-                                    .map(channel -> channel.createMessage(e.getMessage()))
-                                    .then();
-                    }
-                }))
-
-                .then());
+        commands.put("play", event -> loadMuisic(properties, event));
+        commands.put("p",event -> loadMuisic(properties,event));
         // Command for showing playlist
         commands.put("q",event -> event.getMessage().getChannel()
                 .flatMap(channel -> channel.createEmbed(spec -> spec.setColor(Color.DARK_GOLDENROD)
@@ -165,6 +141,53 @@ public class Commands implements Service {
                 .getService().sendPreviews(e)
         );
 
+    }
+
+    private Mono<Void> loadMuisic(Properties properties, MessageCreateEvent event) {
+        return Mono.justOrEmpty(event.getMessage().getContent())
+                .map(content -> Arrays.asList(content.split(" ")))
+                .filter(command -> command.size() != 1)
+                .map(command -> command.get(1).split("&list")[0])
+                .map(command_l -> command_l.contains("http") ?
+                        command_l :
+                        "ytsearch:" + getSearchQue(event.getMessage().getContent())
+                )
+                .doOnNext(url -> properties.getPlayerManager().loadItem(url, new AudioLoadResultHandler() {
+                    @Override
+                    public void trackLoaded(AudioTrack audioTrack) {
+                        GuildAudioManager.of(event.getGuildId().get()).getScheduler().play(audioTrack, false);
+                    }
+
+                    @Override
+                    public void playlistLoaded(AudioPlaylist audioPlaylist) {
+                        if (audioPlaylist.isSearchResult()){
+                            // TODO: 7/14/2021 Let user choose from searchedList
+                            int selected=0;
+                            GuildAudioManager.of(event.getGuildId().get()).getScheduler().play(audioPlaylist.getTracks().get(selected));
+                            event.getMessage().getChannel().block().createMessage("Playing🤖 ```" + audioPlaylist.getTracks().get(selected).getInfo().title+"```").block();
+                            return;
+                        }
+                        GuildAudioManager.of(event.getGuildId().get()).getScheduler().getQueue().addAll(audioPlaylist.getTracks());
+                    }
+
+                    @Override
+                    public void noMatches() {
+                        event.getMessage().getChannel().block().createMessage("No matches").block();
+                    }
+
+                    @Override
+                    public void loadFailed(FriendlyException e) {
+                        event.getMessage().getChannel()
+                                .map(channel -> channel.createMessage(e.getMessage()))
+                                .then();
+                    }
+                }))
+
+                .then();
+    }
+
+    private String getSearchQue(String content) {
+        return Arrays.stream(content.split(" ")).skip(1).collect(Collectors.joining(" "));
     }
 
     private Mono<Void> getMessage(Properties properties, MessageCreateEvent event, MessageChannel channel) {

@@ -34,13 +34,14 @@ public class Properties  {
     chApi _2ch_ = new chApi(this);
     final TrackScheduler scheduler = new TrackScheduler(player);
     final imageFun ImageFun = new imageFun();
-    public static Snowflake id;// TODO: 9/29/2020 its better to check by id not by string
+    public static Snowflake id;
     final TV tv=new TV();
 
     public Properties(GatewayDiscordClient client){
         this.client=client;
         playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
         AudioSourceManagers.registerRemoteSources(playerManager);
+
         //add all services down here
         services.add(new Commands());
 

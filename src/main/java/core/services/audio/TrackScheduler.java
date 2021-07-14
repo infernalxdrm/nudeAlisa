@@ -45,12 +45,19 @@ public final class TrackScheduler extends AudioEventAdapter {
         if (!playing) {
             playlist.add(track);
         }
-        current_track=track;
+        else current_track=track;
         return playing;
     }
 
     public boolean skip() {
-        return !playlist.isEmpty() && play(playlist.remove(0), true);
+        if (playlist.size()>1)return   play(playlist.remove(1), true);
+        else  {
+            if (!playlist.isEmpty())playlist.remove(0);
+            player.stopTrack();
+            current_track=null;
+            return true;
+        }
+
     }
 
     @Override
@@ -82,7 +89,7 @@ public final class TrackScheduler extends AudioEventAdapter {
                 .append(" Minutes")
                 .append("\n\n\n");
         AtomicInteger number_in_q= new AtomicInteger(2);
-        playlist.forEach(audioTrack ->
+        playlist.stream().filter(track -> !track.getIdentifier().equals(current_track.getIdentifier())).forEach(audioTrack ->
                 builder.append(number_in_q.getAndIncrement())
                 .append(")").append(audioTrack.getInfo().title)
                 .append("\nBy Author: ").append(audioTrack.getInfo().author)
