@@ -3,7 +3,14 @@ package instagram;
 import core.nudeAlisa;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.MessageChannel;
+import io.github.techgnious.IVCompressor;
+import io.github.techgnious.dto.IVSize;
+import io.github.techgnious.dto.ImageFormats;
+import io.github.techgnious.dto.ResizeResolution;
+import io.github.techgnious.dto.VideoFormats;
+import io.github.techgnious.exception.VideoException;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -21,10 +28,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class instagram {
     private static final short time_delay = 45;//sec
     private int time_sicne_last = 1000;
-    private static InputStream video = null;
-    private static final Map<Snowflake, Boolean> enabled = new ConcurrentHashMap<>();
+    private InputStream video = null;
     // WebClient client;
     HashSet<Integer> added = new HashSet<>();
+    private byte[] video_bytes;
     //private AtomicReference<HtmlPage> page = new AtomicReference<>();
 
     private List<String> getLinksToPreview(String origin)throws Exception  {
@@ -33,7 +40,7 @@ public class instagram {
         httpPost.setHeader("Cookie", "sessionid=" + nudeAlisa.argc[1]);
         HttpResponse response=null;
         try {
-         response = httpClient.execute(httpPost);
+            response = httpClient.execute(httpPost);
         }
         catch (Exception exception){
             System.err.println(exception.getMessage());
@@ -75,18 +82,49 @@ public class instagram {
 
     public Mono<Void> sendPreviews(MessageCreateEvent e) {
         final MessageChannel channel = e.getMessage().getChannel().block();
-
         if (!e.getMessage().getContent().contains("https://www.instagram.com/"))
             return e.getMessage().getChannel().then();
         if (time_exeded()) {
             channel.createMessage("Please wait " + (time_delay - time_sicne_last) + " seconds before sending again :heart:").block();
             return e.getMessage().getChannel().then();
         }
-        HashSet<InputStream> set = getPreviews(e.getMessage().getContent());
-        if (video != null) channel.createMessage(ch -> ch.addFile("video.mp4", video)).block();
+        HashSet<InputStream> set = getPreviews(e);
+        if (video != null){
+            byte[]bytes = null;
+
+            try {
+                bytes=video.readAllBytes();
+                long maxSize=getMaxFileUploadSize(e.getGuild().block());
+                if (bytes.length>maxSize){
+                    IVCompressor compressor = new IVCompressor();
+                    System.out.printf("Original size -> %f MB\n",(double)bytes.length/(1e6));
+                    IVSize customRes=new IVSize();
+
+                    int defWidth=1280;
+                    int defHeight=720;
+                    double a = Math.sqrt((double)((double)maxSize/(double)bytes.length));
+                    System.out.printf("resize param -> %f\n",a);
+                    int newW= (int) Math.floor(a *(double) defWidth);
+                    int newH=(int)Math.floor(a *(double) defHeight);
+                    if (newW%2!=0)newW-=1;
+                    if (newH%2!=0)newH-=1;
+                    customRes.setHeight(newH);
+                    customRes.setWidth(newW);
+                    bytes=compressor.reduceVideoSizeWithCustomRes(bytes,VideoFormats.MP4,customRes);
+                    System.out.printf("New size -> %f MB\n",(double)bytes.length/(1e6));
+                }
+
+                video_bytes=bytes;
+            } catch (IOException | VideoException ioException) {
+                ioException.printStackTrace();
+            }
+
+            if (video_bytes!=null)channel.createMessage(ch -> ch.addFile("video.mp4", new ByteArrayInputStream(video_bytes))).block();
+        }
         else set.forEach(s -> channel.createMessage(chan -> chan.addFile("1.jpg", s)).block());
         added.clear();
         video = null;
+        video_bytes=null;
         time_sicne_last = 0;
         return e.getMessage().getChannel().then();
     }
@@ -131,7 +169,7 @@ public class instagram {
         try {
             video = new URL(s).openStream();
         } catch (IOException e) {
-            //  e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -156,21 +194,61 @@ public class instagram {
     }
 
     @SneakyThrows
-    public HashSet<InputStream> getPreviews(String link) {
+    public HashSet<InputStream> getPreviews(MessageCreateEvent event) {
+        String link= event.getMessage().getContent();
         HashSet<InputStream> streams = new HashSet<>();
         ImageChecker c = new ImageChecker();
         ArrayList<BufferedImage> images = getBestResolution(getLinksToPreview(link));
+        IVCompressor compressor = new IVCompressor();
+        long maxSize=getMaxFileUploadSize(event.getGuild().block());
         images.forEach(im -> {
-
             try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-                ImageIO.write(im, "jpeg", os);                          // Passing: ​(RenderedImage im, String formatName, OutputStream output)
-                streams.add(new ByteArrayInputStream(os.toByteArray()));
+                ImageIO.write(im, "jpeg", os);// Passing: ​(RenderedImage im, String formatName, OutputStream output)
+                byte[] bytes = os.toByteArray();
+                if (bytes.length>maxSize){
+                    System.out.print(String.format("Original size -> %f MB\n",(double)bytes.length/(1e6)));
+                    IVSize customRes=new IVSize();
+                    int defWidth=im.getWidth();
+                    int defHeight=im.getHeight();
+                    double a = Math.sqrt((double)((double)maxSize/(double) bytes.length));
+                    int newW= (int) Math.floor(a *(double) defWidth);
+                    int newH=(int)Math.floor(a *(double) defHeight);
+                    if (newW%2!=0)newW-=1;
+                    if (newH%2!=0)newH-=1;
+                    customRes.setHeight(newH);
+                    customRes.setWidth(newW);
+                    bytes=compressor.resizeImageWithCustomRes(bytes, ImageFormats.JPEG,customRes);
+                    System.out.print(String.format("New size -> %f MB\n",(double)bytes.length/(1e6)));
+                }
+                streams.add(new ByteArrayInputStream(bytes));
+                bytes=null;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         return streams;
 
+    }
+
+    /**
+     * calculates max file upload size for selected server
+     * 8mb for boost level 0 to 1
+     * 50mb for boost level 2
+     * 100mb for boost level 3
+     * @param guild server's guild
+     * @return max file size in bytes
+     */
+    private long getMaxFileUploadSize(Guild guild) {
+        int tier = guild.getPremiumTier().getValue();
+        System.out.println("Premium tier is "+tier);
+        switch (tier){
+            case 2:
+                return (long) (50 * 1e6);
+            case 3:
+                return (long) (100 * 1e6);
+            default:
+                return (long) (8 * 1e6);
+        }
     }
 
 //    public void login() throws IOException {
