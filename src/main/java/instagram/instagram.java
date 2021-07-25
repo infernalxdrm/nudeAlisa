@@ -109,8 +109,10 @@ public class instagram {
                     if (newW%2!=0)newW-=1;
                     if (newH%2!=0)newH-=1;
                     customRes.setHeight(newH);
+
                     customRes.setWidth(newW);
-                    bytes=compressor.reduceVideoSizeWithCustomRes(bytes,VideoFormats.MP4,customRes);
+                    bytes=compressor.reduceVideoSize(bytes,VideoFormats.MP4,ResizeResolution.VIDEO_DEFAULT);
+                    //bytes=compressor.reduceVideoSizeWithCustomRes(bytes,VideoFormats.MP4,customRes);
                     System.out.printf("New size -> %f MB\n",(double)bytes.length/(1e6));
                 }
 
