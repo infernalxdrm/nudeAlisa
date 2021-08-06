@@ -1,6 +1,7 @@
 package instagram;
 
 import core.nudeAlisa;
+import core.services.MessageManager;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
@@ -85,7 +86,7 @@ public class instagram {
         if (!e.getMessage().getContent().contains("https://www.instagram.com/"))
             return e.getMessage().getChannel().then();
         if (time_exeded()) {
-            channel.createMessage("Please wait " + (time_delay - time_sicne_last) + " seconds before sending again :heart:").block();
+            MessageManager.createTimedMessage(e,"Please wait " + (time_delay - time_sicne_last) + " seconds before sending again :heart:",(time_delay - time_sicne_last));
             return e.getMessage().getChannel().then();
         }
         HashSet<InputStream> set = getPreviews(e);

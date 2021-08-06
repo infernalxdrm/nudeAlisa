@@ -1,15 +1,12 @@
 package core.services;
 
-import answerable.AI;
-import answerable.answerable;
 import chan_2.chApi;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
-import core.ReactionListener;
-import core.services.audio.GuildAudioManager;
+import core.services.reactions.ReactionListener;
 import core.services.audio.LavaAudioProvider;
 import core.services.audio.TrackScheduler;
 import core.services.video.TV;
@@ -18,7 +15,6 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.voice.AudioProvider;
 import imageFun.imageFun;
-import answerable.answerableManager;
 
 import java.util.ArrayList;
 
@@ -29,7 +25,6 @@ public class Properties  {
     final AudioPlayer player = playerManager.createPlayer();
     // We will be creating LavaPlayerAudioProvider in the next step
     AudioProvider provider = new LavaAudioProvider(player);
-    public ReactionListener listener;
     DeepNudeProcced deepNude = new DeepNudeProcced();
     chApi _2ch_ = new chApi(this);
     final TrackScheduler scheduler = new TrackScheduler(player);
@@ -48,10 +43,6 @@ public class Properties  {
         //...
         //init setup for services you added
         services.forEach(service -> service.setup(this));
-    }
-
-    public ReactionListener getListener() {
-        return listener;
     }
 
     public AudioPlayerManager getPlayerManager() {

@@ -2,6 +2,7 @@ package core;
 
 import core.services.Commands;
 import core.services.Properties;
+import core.services.reactions.ReactionListener;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ConnectEvent;

@@ -2,8 +2,10 @@ package chan_2;
 
 import chan_2.JsonComponents.*;
 import com.google.gson.Gson;
-import core.ReactionListener;
+import core.services.MessageManager;
 import core.services.Properties;
+import core.services.reactions.ReactionListener;
+import core.services.reactions.ReactionListenerManager;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -15,15 +17,11 @@ import utils.htmlToDiscord;
 import utils.httpUtil;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class chApi {
     Properties p;
-    public boolean c = false;
 
     public chApi(Properties p) {
         this.p = p;
@@ -218,10 +216,8 @@ public class chApi {
 
     private Mono<Void> work(MessageCreateEvent e, MessageChannel channel, String boardname, String link, board board, int f) {
         if (board == null || board.threads == null) return e.getMessage().getChannel().then();
-        if (!c) {
-            p.listener = new ReactionListener(e.getGuildId().get());
-            c = true;
-        }
+        ReactionListener listener = ReactionListenerManager.of(e.getGuildId().get());
+
         for (int z = 4 * f; z < 4 * (f + 1) && z < board.threads.length; z++) {
             thread t = board.threads[z];
             String comment = htmlToDiscord.normalize(t.getComment());
@@ -299,7 +295,7 @@ public class chApi {
 //            if (p.listener == null) {
 //                p.listener = new ReactionListener(e.getGuildId().get());
 //            }
-            p.listener.instructions.put(
+            listener.instructions.put(
                     m1.getId(),
                     event -> proceedThreadBoard("https://2ch.hk/" + boardname + "/res/" + t.getNum() + ".json", e)
             );
@@ -321,13 +317,9 @@ public class chApi {
 //                    .subscribe();
         }
         Message m1 = channel.createMessage("Continue reading this board ? ").block();
-        m1.addReaction(ReactionEmoji.unicode("\u27A1")).block();
         AtomicInteger z = new AtomicInteger(f);
+        MessageManager.createReactionListener(Objects.requireNonNull(m1),ReactionEmoji.unicode("\u27A1"), event -> work(e, channel, boardname, link, board, z.incrementAndGet()));
         //p.listener=new ReactionListener(e.getGuildId().get());
-        p.listener.instructions.put(
-                m1.getId(),
-                event -> work(e, channel, boardname, link, board, z.incrementAndGet())
-        );
         return e.getMessage().getChannel().then();
     }
 
@@ -411,13 +403,9 @@ public class chApi {
             }
         }
         Message m1 = channel.createMessage("Continue reading this thread ? ").block();
-        m1.addReaction(ReactionEmoji.unicode("\u27A1")).block();
         AtomicInteger z = new AtomicInteger(x);
+        MessageManager.createReactionListener(m1,ReactionEmoji.unicode("\u27A1"),event -> workFromThread(channel, postsStack, z.incrementAndGet()));
         //  p.listener=new ReactionListener(channel.getId());
-        p.listener.instructions.put(
-                m1.getId(),
-                event -> workFromThread(channel, postsStack, z.incrementAndGet())
-        );
         return channel.getLastMessage().then();
     }
 
