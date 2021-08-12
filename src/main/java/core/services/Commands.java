@@ -126,6 +126,7 @@ public class Commands implements Service {
         commands.put("disconnect", event -> GuildAudioManager.of(event.getGuildId().get()).disconnect(event.getGuildId().get()));
         commands.put("leave", event -> GuildAudioManager.of(event.getGuildId().get()).disconnect(event.getGuildId().get()));
         commands.put("stat", PerformanceMonitor::__);
+        commands.put("logs", PerformanceMonitor::sendLogs);
         //  commands.put("nude", event -> properties.deepNude.getDeepNude(event)); deprecated
 
         // TODO: 11/8/2020 rearrange commands
