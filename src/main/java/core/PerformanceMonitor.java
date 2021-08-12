@@ -6,10 +6,7 @@ import discord4j.core.object.entity.channel.TextChannel;
 import lombok.SneakyThrows;
 import reactor.core.publisher.Mono;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -121,5 +118,19 @@ public class PerformanceMonitor {
      //   }
        channel.createMessage(print()).block();
        return e.getMessage().getChannel().then();
+    }
+    public static Mono<Void> sendLogs(MessageCreateEvent e){
+       File logs = new File("nohup.out");
+       if (!logs.exists())return e.getMessage().getChannel().then();
+        final MessageChannel channel = e.getMessage().getChannel().block();
+        channel.createMessage(s-> {
+            try {
+                s.addFile("logs.txt",new FileInputStream(logs));
+            } catch (FileNotFoundException ex) {
+                channel.createMessage("Logs not found").block();
+                ex.printStackTrace();
+            }
+        }).block();
+        return e.getMessage().getChannel().then();
     }
 }

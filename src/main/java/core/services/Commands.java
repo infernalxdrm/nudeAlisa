@@ -195,13 +195,19 @@ public class Commands implements Service {
 
         if (event.getMessage().getUserMentionIds().contains(Properties.id)) {
             try {
-                return channel.createMessage(s->s.setTts(true)
-                        .setContent(answerableManager.of(event.getGuildId().get()).getAnwerable()
-                                .respond(event.getMessage().getContent()
-                                        .substring(nudeAlisa.client.getSelf().block().getMention().length() - 1)
-                                        ,event.getGuild().block()))
+                try {
+                    String message =event.getMessage().getContent()
+                            .substring(nudeAlisa.client.getSelf().block().getMention().length() - 1);
+                    return channel.createMessage(s->s.setTts(true)
+                            .setContent(answerableManager.of(event.getGuildId().get()).getAnwerable()
+                                    .respond(message,event.getGuild().block()))
 
-                ).then();
+                    ).then();
+                }
+                catch (ArrayIndexOutOfBoundsException e){
+                    e.printStackTrace();
+                    return event.getMessage().getChannel().then();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 return event.getMessage().getChannel().then();
