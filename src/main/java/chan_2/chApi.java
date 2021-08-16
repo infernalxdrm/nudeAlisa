@@ -318,7 +318,7 @@ public class chApi {
         }
         Message m1 = channel.createMessage("Continue reading this board ? ").block();
         AtomicInteger z = new AtomicInteger(f);
-        MessageManager.createReactionListener(Objects.requireNonNull(m1),ReactionEmoji.unicode("\u27A1"), event -> work(e, channel, boardname, link, board, z.incrementAndGet()));
+        MessageManager.createReactionListener(e,Objects.requireNonNull(m1),ReactionEmoji.unicode("\u27A1"), event -> work(e, channel, boardname, link, board, z.incrementAndGet()));
         //p.listener=new ReactionListener(e.getGuildId().get());
         return e.getMessage().getChannel().then();
     }
@@ -334,12 +334,13 @@ public class chApi {
         Collections.reverse(list);
         postsStack.addAll(list);
         int x = 0;
-        workFromThread(channel, postsStack, x);
+        workFromThread(e, postsStack, x);
 //
         return e.getMessage().getChannel().then();
     }
 
-    private Mono<Void> workFromThread(MessageChannel channel, Stack<post> postsStack, int x) {
+    private Mono<Void> workFromThread(MessageCreateEvent e, Stack<post> postsStack, int x) {
+       final MessageChannel channel = e.getMessage().getChannel().block();
         for (int i = 4 * x; i < 4 * (x + 1) && postsStack.size() > 0; i++) {
             AtomicInteger filesAdded = new AtomicInteger(0);
             post p = postsStack.pop();
@@ -404,7 +405,7 @@ public class chApi {
         }
         Message m1 = channel.createMessage("Continue reading this thread ? ").block();
         AtomicInteger z = new AtomicInteger(x);
-        MessageManager.createReactionListener(m1,ReactionEmoji.unicode("\u27A1"),event -> workFromThread(channel, postsStack, z.incrementAndGet()));
+        MessageManager.createReactionListener(e,m1,ReactionEmoji.unicode("\u27A1"),event -> workFromThread(e, postsStack, z.incrementAndGet()));
         //  p.listener=new ReactionListener(channel.getId());
         return channel.getLastMessage().then();
     }

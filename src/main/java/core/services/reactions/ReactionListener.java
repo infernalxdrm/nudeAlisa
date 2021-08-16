@@ -33,10 +33,11 @@ public class ReactionListener {
         //Listeners.get(e.getGuildId().get()).get(e.getMessageId()).execute(e).block();
         try {
             ReactionListener listener = ReactionListenerManager.of(e.getGuildId().get());
-            ReactionCommand c = listener.instructions.get(e.getGuildId().get());
+            ReactionCommand c = listener.instructions.get(e.getMessageId());
             System.out.println(c);
             if (c == null) return e.getMessage().then();
-            return c.execute(e).then();
+            c.execute(e).block();
+            return e.getMessage().then();
         } catch (Exception es) {
             return e.getMessage().then();
         }

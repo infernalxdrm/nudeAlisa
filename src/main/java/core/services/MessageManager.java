@@ -25,9 +25,10 @@ public class MessageManager {
         }).start();
         return event.getMessage().getChannel().then();
     }
-    public static void createReactionListener(Message message, ReactionEmoji emoji,ReactionCommand c){
-        message.addReaction(emoji);
-        ReactionListener listener= ReactionListenerManager.of(message.getGuildId().get());
+    public static void createReactionListener(MessageCreateEvent e,Message message, ReactionEmoji emoji,ReactionCommand c){
+        if(message==null) return;
+        message.addReaction(emoji).block();
+        ReactionListener listener= ReactionListenerManager.of(e.getGuildId().get());
         listener.instructions.put(message.getId(),c);
     }
 
