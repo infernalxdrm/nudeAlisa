@@ -37,7 +37,14 @@ public class instagram {
 
     private List<String> getLinksToPreview(String origin)throws Exception  {
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(origin);
+        HttpPost httpPost;
+        try{
+            httpPost = new HttpPost(origin);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return List.of("");
+        }
         httpPost.setHeader("Cookie", "sessionid=" + nudeAlisa.argc[1]);
         HttpResponse response=null;
         try {
@@ -83,7 +90,7 @@ public class instagram {
 
     public Mono<Void> sendPreviews(MessageCreateEvent e) {
         final MessageChannel channel = e.getMessage().getChannel().block();
-        if (!e.getMessage().getContent().contains("https://www.instagram.com/"))
+        if (!e.getMessage().getContent().startsWith("https://www.instagram.com/"))
             return e.getMessage().getChannel().then();
         if (time_exeded()) {
             MessageManager.createTimedMessage(e,"Please wait " + (time_delay - time_sicne_last) + " seconds before sending again :heart:",(time_delay - time_sicne_last));
