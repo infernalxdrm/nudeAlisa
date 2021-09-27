@@ -32,6 +32,7 @@ public class instagram {
     // WebClient client;
     HashSet<Integer> added = new HashSet<>();
     private byte[] video_bytes;
+    private int post_count = 0;
     private List<InputStream> videos = new LinkedList<>();
     //private AtomicReference<HtmlPage> page = new AtomicReference<>();
 
@@ -66,8 +67,7 @@ public class instagram {
         StringBuilder a = new StringBuilder();
         List<String> links = new LinkedList<>();
         while ((inputLine = in.readLine()) != null) {
-            // System.out.println(inputLine);
-            if (inputLine.contains("\"config_width\":1080"))
+             if (inputLine.contains("\"config_width\":1080"))
                 Arrays.stream(inputLine.replace("\\u0026", "&")
                         .split("https://"))
                         .filter(po -> !po.contains("150x150"))
@@ -157,11 +157,16 @@ public class instagram {
             } else i = download(s);
             if (i != null) images.add(i);
         });
-        images.sort(Comparator.comparingInt(BufferedImage::getHeight));
+        images.sort(Comparator.comparingInt(im->im.getHeight()*im.getWidth()));
         //if (video != null) images.clear();
+        //after sorting the list we got highest resolution at the end of the list
+        ArrayList<BufferedImage> selected = new ArrayList<>();
         if (images.size() >= 1) {
-            int x = images.get(images.size() - 1).getHeight();
-            images.removeIf(image -> image.getHeight() != x);
+            int number_of_post = (images.size()-1)/3;
+            for(int a=1;a<=number_of_post;a++){
+                selected.add(images.get(images.size()-a));
+                //select last as theire best quality
+            }
         }
         // links.forEach(l->links.forEach(s -> System.out.println(StringUtils.difference(s,l))));
         //links.removeIf(s -> !s.contains("p1080x1080") || !s.contains("p2080x1350"));
@@ -172,7 +177,8 @@ public class instagram {
 //            }
 //        }
 //        toRemove.forEach(id->images.remove(id));
-        return images;
+        images.clear();
+        return selected;
     }
 
     private void proceedVideo(String s) {
@@ -305,7 +311,7 @@ public class instagram {
                     equals++;//if pixels are same increase counter
             }
         }
-        if (equals >= max_equal - error) same = true;
+        if (Math.abs(equals-max_equal)<=error) same = true;
         return same;
     }
 
