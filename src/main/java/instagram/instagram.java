@@ -29,10 +29,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class instagram {
     private static final short time_delay = 45;//sec
     private int time_sicne_last = 1000;
-    private InputStream video = null;
     // WebClient client;
     HashSet<Integer> added = new HashSet<>();
     private byte[] video_bytes;
+    private List<InputStream> videos = new LinkedList<>();
     //private AtomicReference<HtmlPage> page = new AtomicReference<>();
 
     private List<String> getLinksToPreview(String origin)throws Exception  {
@@ -97,7 +97,7 @@ public class instagram {
             return e.getMessage().getChannel().then();
         }
         HashSet<InputStream> set = getPreviews(e);
-        if (video != null){
+        for(InputStream video:videos){
             byte[]bytes = null;
 
             try {
@@ -131,11 +131,11 @@ public class instagram {
 
             if (video_bytes!=null)channel.createMessage(ch -> ch.addFile("video.mp4", new ByteArrayInputStream(video_bytes))).block();
         }
-        else set.forEach(s -> channel.createMessage(chan -> chan.addFile("1.jpg", s)).block());
+        set.forEach(s -> channel.createMessage(chan -> chan.addFile("1.jpg", s)).block());
         added.clear();
-        video = null;
         video_bytes=null;
         time_sicne_last = 0;
+        videos.clear();
         return e.getMessage().getChannel().then();
     }
 
@@ -158,7 +158,7 @@ public class instagram {
             if (i != null) images.add(i);
         });
         images.sort(Comparator.comparingInt(BufferedImage::getHeight));
-        if (video != null) images.clear();
+        //if (video != null) images.clear();
         if (images.size() >= 1) {
             int x = images.get(images.size() - 1).getHeight();
             images.removeIf(image -> image.getHeight() != x);
@@ -177,7 +177,7 @@ public class instagram {
 
     private void proceedVideo(String s) {
         try {
-            video = new URL(s).openStream();
+            videos.add(new URL(s).openStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
